@@ -1,0 +1,36 @@
+spring:
+  profiles.active: develop
+
+# Environment - Development
+---
+spring:
+  profiles: develop
+  application:
+    name: shakese-api
+        
+  datasource:
+    name: db-dev
+    url: jdbc:postgresql://localhost:5432/shakese
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    platform: 
+    hikari:
+        connection-timeout: 20000
+        maximum-pool-size: 5
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        use_sql_comments: false
+        format_sql: true
+        ddl-auto: update 
+        temp.use_jdbc_metadata_defaults: false
+        database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    generate-ddl: true
+
+server:
+  address: localhost
+  port: 8080
+  servlet:
+    context-path: /api
