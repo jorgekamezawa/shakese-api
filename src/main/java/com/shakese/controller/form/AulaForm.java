@@ -19,12 +19,11 @@ public class AulaForm {
 	private String nome;
 
 	@NotNull
-	private double preco;
+	private String nomeNivel;
 
 	public Aula converter(NivelRepository nivelRepository) {
-		Nivel nivel = nivelRepository.findByNome(nome);
-		
-		return new Aula(nivel, preco);
+		Nivel nivel = nivelRepository.findByNome(nomeNivel);
+		return new Aula(nome, nivel);
 	}
-
+	
 }

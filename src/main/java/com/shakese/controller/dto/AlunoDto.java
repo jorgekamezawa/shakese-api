@@ -17,14 +17,13 @@ public class AlunoDto {
 
 	private Long id;
 	private String nome;
-	private List<AulaDto> aulas;
+	private List<TurmaDto> turmas;
 
 	public AlunoDto(Aluno aluno) {
 		this.id = aluno.getAlunoId();
-		this.nome = aluno.getNome();
-		this.aulas = new ArrayList<>();
-		this.aulas.addAll(aluno.getAula().stream()
-				.map(AulaDto::new)
+		this.turmas = new ArrayList<>();
+		this.turmas.addAll(aluno.getTurma().stream()
+				.map(TurmaDto::new)
 				.collect(Collectors.toList()));
 	}
 

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlunoDetalhadoDto {
+public class AlunoDtoDetalhado {
 
 	private Long alunoId;
 	private String nome;
@@ -23,17 +23,17 @@ public class AlunoDetalhadoDto {
 	private Sexo sexo;
 	private String cpf;
 	private EnderecoDto endereco;
-	private List<AulaDto> aulas;
+	private List<TurmaDto> aulas;
 
-	public AlunoDetalhadoDto(Aluno aluno) {
+	public AlunoDtoDetalhado(Aluno aluno) {
 		this.alunoId = aluno.getAlunoId();
-		this.nome = aluno.getNome();
-		this.nascimento = aluno.getNascimento();
-		this.sexo = aluno.getSexo();
-		this.cpf = aluno.getCpf();
-		this.endereco = new EnderecoDto(aluno.getEndereco());
-		this.aulas = new ArrayList<AulaDto>();
-		this.aulas.addAll(aluno.getAula().stream().map(AulaDto::new).collect(Collectors.toList()));
+//		this.nome = aluno.getNome();
+//		this.nascimento = aluno.getNascimento();
+//		this.sexo = aluno.getSexo();
+//		this.cpf = aluno.getCpf();
+//		this.endereco = new EnderecoDto(aluno.getEndereco());
+//		this.aulas = new ArrayList<TurmaDto>();
+//		this.aulas.addAll(aluno.getAula().stream().map(TurmaDto::new).collect(Collectors.toList()));
 	}
 	
 	

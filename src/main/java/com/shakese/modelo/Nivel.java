@@ -1,5 +1,7 @@
 package com.shakese.modelo;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity(name = "NivelEntity")
 @Table(name = "tbl_nivel")
-public class Nivel {
+public class Nivel implements Serializable {
 	
 	@Transient
 	private static final long serialVersionUID = -3535151955081280862L;

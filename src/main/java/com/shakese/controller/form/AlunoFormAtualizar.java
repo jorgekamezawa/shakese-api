@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AtualizarAlunoForm {
+public class AlunoFormAtualizar {
 
 	@NotNull
 	@Length(max = 30)
@@ -24,10 +24,10 @@ public class AtualizarAlunoForm {
 	@NotNull
 	private Endereco endereco;
 
-	public Aluno atualizar(Long id, AlunoRepository alunoRepository) {
-		Aluno aluno = alunoRepository.getOne(id);
-		aluno.setNome(nome);
-		aluno.setEndereco(endereco);
-		return aluno;
-	}
+//	public Aluno atualizar(Long id, AlunoRepository alunoRepository) {
+//		Aluno aluno = alunoRepository.getOne(id);
+//		aluno.setNome(nome);
+//		aluno.setEndereco(endereco);
+//		return aluno;
+//	}
 }

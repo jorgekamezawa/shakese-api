@@ -20,55 +20,57 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.shakese.controller.dto.AulaDto;
-import com.shakese.controller.form.AtualizarAulaForm;
+import com.shakese.controller.dto.AulaDtoDetalhada;
 import com.shakese.controller.form.AulaForm;
+import com.shakese.controller.form.AulaFormAtualizar;
 import com.shakese.modelo.Aula;
 import com.shakese.repository.AulaRepository;
 import com.shakese.repository.NivelRepository;
 
 @RestController
-@RequestMapping("/aulas")
+@RequestMapping("/aula")
 public class AulaController {
-
+	
 	@Autowired
 	private AulaRepository aulaRepository;
 	
 	@Autowired
 	private NivelRepository nivelRepository;
-
+	
 	@GetMapping
-	public List<AulaDto> listarAulas() {
-		List<Aula> aula = aulaRepository.findAll();
-		return AulaDto.converter(aula);
+	public List<AulaDto> listarAulas(){
+		List<Aula> aulas = aulaRepository.findAll();
+		return AulaDto.converter(aulas);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<AulaDto> listaDetalhada(@PathVariable Long id){
+	public ResponseEntity<AulaDtoDetalhada> listarAulaDetalhada(@PathVariable Long id){
 		Optional<Aula> aula = aulaRepository.findById(id);
 		if(aula.isPresent()) {
-			return ResponseEntity.ok(new AulaDto(aula.get()));
+			return ResponseEntity.ok(new AulaDtoDetalhada(aula.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
-
+	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<AulaDto> cadastrarAulas(@RequestBody @Valid AulaForm aulasForm,
-			UriComponentsBuilder uriBuilder) {
-		aulaRepository.save(aulasForm.converter(nivelRepository));
-
-		URI uri = uriBuilder.path("/aulas/{id}").buildAndExpand(aulasForm.converter(nivelRepository).getAulaId()).toUri();
-		return ResponseEntity.created(uri).body(new AulaDto(aulasForm.converter(nivelRepository)));
+	public ResponseEntity<AulaDto> cadastrarAula(@RequestBody @Valid AulaForm form, UriComponentsBuilder uriBuilder){
+		Aula aula = form.converter(nivelRepository);
+		if(aula.getNivel() != null) {
+			aulaRepository.save(aula);
+			URI uri = uriBuilder.path("/aula/{id}").buildAndExpand(aula.getAulaId()).toUri();
+			return ResponseEntity.created(uri).body(new AulaDto(aula));
+		}
+		return ResponseEntity.notFound().build();
+		
 	}
 	
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id,
-			@RequestBody @Valid AtualizarAulaForm atualizarAulaForm){
+	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form){
 		Optional<Aula> optional = aulaRepository.findById(id);
-		
-		if (optional.isPresent()) {
-			Aula aula = atualizarAulaForm.atualizar(id, aulaRepository);
+		if(optional.isPresent()) {
+			Aula aula = form.atualizar(id, aulaRepository);
 			return ResponseEntity.ok(new AulaDto(aula));
 		}
 		return ResponseEntity.notFound().build();
@@ -77,8 +79,8 @@ public class AulaController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id){
-		Optional<Aula> optional = aulaRepository.findById(id);
-		if(optional.isPresent()) {
+		Optional<Aula> aula = aulaRepository.findById(id);
+		if(aula.isPresent()) {
 			aulaRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}

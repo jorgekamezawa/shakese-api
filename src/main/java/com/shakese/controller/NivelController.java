@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.shakese.controller.dto.NivelDto;
-import com.shakese.controller.form.AtualizarNivelForm;
+import com.shakese.controller.form.NivelFormAtualizar;
 import com.shakese.controller.form.NivelForm;
 import com.shakese.modelo.Nivel;
 import com.shakese.repository.NivelRepository;
@@ -50,19 +50,19 @@ public class NivelController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<NivelDto> cadastrarNivel(@RequestBody @Valid NivelForm nivelForm, UriComponentsBuilder uriBuilder){
-		nivelRepository.save(nivelForm.converter());
+		Nivel nivel = nivelRepository.save(nivelForm.converter());
 		
-		URI uri = uriBuilder.path("/nivel/{id}").buildAndExpand(nivelForm.converter().getNivelId()).toUri();
-		return ResponseEntity.created(uri).body(new NivelDto(nivelForm.converter()));
+		URI uri = uriBuilder.path("/nivel/{id}").buildAndExpand(nivel.getNivelId()).toUri();
+		return ResponseEntity.created(uri).body(new NivelDto(nivel));
 	}
 	
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<NivelDto> atualizarNivel(@PathVariable Long id,
-			@RequestBody @Valid AtualizarNivelForm atualizarNivelForm){
+	public ResponseEntity<NivelDto> atualizarNivel(@PathVariable Long id, 
+			@RequestBody @Valid NivelFormAtualizar form){
 		Optional<Nivel> optional = nivelRepository.findById(id);
 		if(optional.isPresent()) {
-			Nivel nivel = atualizarNivelForm.atualizar(id, nivelRepository);
+			Nivel nivel = form.atualizar(id, nivelRepository);
 			return ResponseEntity.ok(new NivelDto(nivel));
 		}
 		return ResponseEntity.notFound().build();
@@ -71,8 +71,8 @@ public class NivelController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarNivel(@PathVariable Long id){
-		Optional<Nivel> optional = nivelRepository.findById(id);
-		if(optional.isPresent()) {
+		Optional<Nivel> nivel = nivelRepository.findById(id);
+		if(nivel.isPresent()) {
 			nivelRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}

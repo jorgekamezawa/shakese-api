@@ -17,33 +17,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "EnderecoEntity")
-@Table(name = "tbl_endereco")
-public class Endereco implements Serializable {
+@Entity(name = "FuncionarioEntity")
+@Table(name = "tbl_funcionario")
+public class Funcionario implements Serializable {
 	
 	@Transient
 	private static final long serialVersionUID = -3535151955081280862L;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long enderecoId;
+	private Long funcionarioId;
+	
+	@Column(name = "cargo")
+	private String cargo;
 
-	@Column(name = "rua")
-	private String rua;
-
-	@Column(name = "bairro")
-	private String bairro;
-
-	@Column(name = "numero")
-	private int numero;
-
-	@Column(name = "cep")
-	private String cep;
-
-	public Endereco(String rua, String bairro, int numero, String cep) {
-		this.rua = rua;
-		this.bairro = bairro;
-		this.numero = numero;
-		this.cep = cep;
-	}
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AtualizarNivelForm {
+public class NivelFormAtualizar {
 
 	@NotNull
 	private String nome;
