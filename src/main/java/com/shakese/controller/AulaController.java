@@ -70,7 +70,7 @@ public class AulaController {
 	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form){
 		Optional<Aula> optional = aulaRepository.findById(id);
 		if(optional.isPresent()) {
-			Aula aula = form.atualizar(id, aulaRepository);
+			Aula aula = form.atualizar(id, aulaRepository, nivelRepository);
 			return ResponseEntity.ok(new AulaDto(aula));
 		}
 		return ResponseEntity.notFound().build();
@@ -79,8 +79,11 @@ public class AulaController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id){
-		Optional<Aula> aula = aulaRepository.findById(id);
-		if(aula.isPresent()) {
+		Optional<Aula> optional = aulaRepository.findById(id);
+		if(optional.isPresent()) {
+			//Aula aula = optional.get();
+			//aula.setNivel(null);
+			//aulaRepository.save(aula);
 			aulaRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}

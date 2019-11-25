@@ -15,10 +15,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AulaDto {
 	
+	private Long id;
 	private String nome;
 	private Nivel nivel;
 	
 	public AulaDto(Aula aula) {
+		this.id = aula.getAulaId();
 		this.nome = aula.getNome();
 		this.nivel = aula.getNivel();
 	}

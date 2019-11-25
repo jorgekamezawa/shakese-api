@@ -33,7 +33,7 @@ public class Turma {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long turmaId;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	private Aula aula;
 	
 	@Column(name = "preco")

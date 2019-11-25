@@ -35,7 +35,7 @@ public class Aula implements Serializable {
 	@Column(name = "nome")
 	private String nome;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	private Nivel nivel;
 	
 	@OneToMany(cascade = CascadeType.ALL)
