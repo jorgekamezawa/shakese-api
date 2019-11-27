@@ -24,6 +24,7 @@ import com.shakese.controller.form.TurmaForm;
 import com.shakese.controller.form.TurmaFormAtualizar;
 import com.shakese.modelo.Turma;
 import com.shakese.repository.AulaRepository;
+import com.shakese.repository.NivelRepository;
 import com.shakese.repository.TurmaRepository;
 
 @RestController
@@ -35,11 +36,14 @@ public class TurmaController {
 	
 	@Autowired
 	private AulaRepository aulaRepository;
+	
+	@Autowired
+	private NivelRepository nivelRepository;
 
 	@GetMapping
 	public List<TurmaDto> listarAulas() {
-		List<Turma> aula = turmaRepository.findAll();
-		return TurmaDto.converter(aula);
+		List<Turma> turma = turmaRepository.findAll();
+		return TurmaDto.converter(turma);
 	}
 	
 	@GetMapping("/{id}")
@@ -56,7 +60,7 @@ public class TurmaController {
 	@Transactional
 	public ResponseEntity<TurmaDto> cadastrarAulas(@RequestBody @Valid TurmaForm form,
 		UriComponentsBuilder uriBuilder) {
-		Turma turma = form.converter(aulaRepository);
+		Turma turma = form.converter(aulaRepository, nivelRepository);
 		if(turma.getAula() != null) {
 			turmaRepository.save(turma);
 			URI uri = uriBuilder.path("/aulas/{id}").buildAndExpand(turma.getTurmaId()).toUri();
@@ -71,7 +75,7 @@ public class TurmaController {
 			@RequestBody @Valid TurmaFormAtualizar form){
 		Optional<Turma> optional = turmaRepository.findById(id);
 		if (optional.isPresent()) {
-			Turma turma = form.atualizar(id, turmaRepository);
+			Turma turma = form.atualizar(id, turmaRepository, aulaRepository, nivelRepository);
 			return ResponseEntity.ok(new TurmaDto(turma));
 		}
 		return ResponseEntity.notFound().build();

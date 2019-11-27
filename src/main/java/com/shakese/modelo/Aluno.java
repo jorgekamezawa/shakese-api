@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -36,21 +37,27 @@ public class Aluno implements Serializable { // pesquisar sobre serealizable
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long alunoId;
+	
+	@Embedded
+	private Pessoa pessoa;
 
 	@Column(name = "desconto")
 	private double desconto;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
 	@JoinTable(name = "tbl_aluno_turma", joinColumns = 
 	@JoinColumn(name = "aluno_id", referencedColumnName = "alunoId", foreignKey = 
 	@ForeignKey(name = "fk_aluno_turma_aluno")), inverseJoinColumns = 
 	@JoinColumn(name = "turma_id", referencedColumnName = "turmaId", foreignKey = 
 	@ForeignKey(name = "fk_aluno_turma_turma")))
-	private List<Turma> turma;
+	private List<Turma> turmas;
 
-	public Aluno(double desconto, List<Turma> turma) {
+	public Aluno(Pessoa pessoa, double desconto, List<Turma> turmas) {
+		this.pessoa = pessoa;
 		this.desconto = desconto;
-		this.turma = turma;
+		this.turmas = turmas;
 	}
+	
+	
 }

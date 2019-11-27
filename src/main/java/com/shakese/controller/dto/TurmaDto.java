@@ -3,11 +3,10 @@ package com.shakese.controller.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.shakese.modelo.Turma;
 import com.shakese.modelo.Aluno;
 import com.shakese.modelo.Aula;
-import com.shakese.modelo.Nivel;
 import com.shakese.modelo.Professor;
+import com.shakese.modelo.Turma;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,16 +19,18 @@ public class TurmaDto {
 
 	private Long turmaId;
 	private double preco;
-	private Aula aula;
+	private String aulaNome;
+	private String nivelNome;
 	private Professor professor;
 	private List<Aluno> alunos;
 	
 	public TurmaDto(Turma turma) {
 		this.turmaId = turma.getTurmaId();
 		this.preco = turma.getPreco();
-		this.aula = turma.getAula();
-		this.professor = turma.getProfessor();
-		this.alunos = turma.getAlunos();
+		this.aulaNome = turma.getAula().getNome();
+		this.nivelNome = turma.getNivel().getNome();
+		//this.professor = turma.getProfessor();
+		//this.alunos = turma.getAlunos();
 	}
 
 	public static List<TurmaDto> converter(List<Turma> aula) {

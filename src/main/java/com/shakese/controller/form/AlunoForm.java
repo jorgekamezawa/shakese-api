@@ -1,17 +1,14 @@
 package com.shakese.controller.form;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Length;
-
 import com.shakese.modelo.Aluno;
+import com.shakese.modelo.Aula;
+import com.shakese.modelo.Pessoa;
 import com.shakese.modelo.Turma;
-import com.shakese.modelo.Endereco;
-import com.shakese.modelo.Sexo;
 import com.shakese.repository.TurmaRepository;
 
 import lombok.AllArgsConstructor;
@@ -22,35 +19,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlunoForm {
-
+	
 	@NotNull
-	@Length(max = 30)
-	private String nome;
-
+	private Pessoa pessoa;
 	@NotNull
-	private LocalDate nascimento;
-
+	private double desconto;
 	@NotNull
-	private Sexo sexo;
-
-	@NotNull
-	@Length(max = 11)
-	private String cpf;
-
-	@NotNull
-	private Endereco endereco;
-
-	@NotNull
-	private List<String> nivelAulas;
-
-//	public Aluno converter(TurmaRepository aulaRepository) {
-//		List<Turma> aulas = new ArrayList<>();
-//		for (int i = 0; i < nivelAulas.size(); i++) {
-//			String nivel = nivelAulas.get(i);
-//			Turma aula = aulaRepository.findByNivelNome(nivel);
-//			aulas.add(aula);
+	private List<Turma> turmas;
+	
+	public Aluno converter(TurmaRepository turmaRepository) {
+		
+		
+		// Nome das Turmas
+		// Pegar as turmas
+		// New Aluno (turmas)
+		
+//		
+//		List<Turma> turmasAluno = new ArrayList<Turma>();
+//		
+//		for (Turma t : turmas) {
+//			Aula aula = t.getAula();
+//			
+//			Turma turma = turmaRepository.findByAula(aula);
+//			turmasAluno.add(turmaRepository.findByAula(aula));
 //		}
-//		return new Aluno(nome, nascimento, sexo, cpf, endereco, aulas);
-//	}
+
+		
+		return new Aluno(pessoa, desconto, turmas);
+	}
+	
 
 }

@@ -1,10 +1,10 @@
 package com.shakese.controller.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.shakese.modelo.Aula;
-import com.shakese.modelo.Nivel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,12 +17,13 @@ public class AulaDto {
 	
 	private Long id;
 	private String nome;
-	private Nivel nivel;
+	private List<NivelDto> nivel;
 	
 	public AulaDto(Aula aula) {
 		this.id = aula.getAulaId();
 		this.nome = aula.getNome();
-		this.nivel = aula.getNivel();
+		this.nivel = new ArrayList<>();
+		this.nivel.addAll(aula.getNivel().stream().map(NivelDto::new).collect(Collectors.toList()));
 	}
 	
 	public static List<AulaDto> converter(List<Aula> aulas) {

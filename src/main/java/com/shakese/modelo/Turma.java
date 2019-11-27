@@ -36,6 +36,9 @@ public class Turma {
 	@ManyToOne(cascade = CascadeType.MERGE)
 	private Aula aula;
 	
+	@ManyToOne(cascade = CascadeType.MERGE)
+	private Nivel nivel;
+	
 	@Column(name = "preco")
 	private double preco;
 	
@@ -45,18 +48,20 @@ public class Turma {
 	@ManyToOne
 	private Professor professor;
 	
-	@ManyToMany(mappedBy = "turma", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Aluno> alunos;
+//	@ManyToMany(mappedBy = "turmas", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//	private List<Aluno> alunos;
 
-	public Turma(Aula aula, double preco, Professor professor, List<Aluno> aluno) {
-		this.preco = preco;
+	public Turma(Aula aula, Nivel nivel, double preco, Professor professor, List<Aluno> aluno) {
 		this.aula = aula;
+		this.nivel = nivel;
+		this.preco = preco;
 		this.professor = professor;
-		this.alunos = aluno;
+		//this.alunos = aluno;
 	}
 	
-	public Turma(Aula aula, double preco) {
-		this.preco = preco;
+	public Turma(Aula aula, Nivel nivel, double preco) {
 		this.aula = aula;
+		this.nivel = nivel;
+		this.preco = preco;
 	}
 }

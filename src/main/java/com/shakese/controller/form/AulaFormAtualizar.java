@@ -24,16 +24,16 @@ public class AulaFormAtualizar {
 	private String nome;
 
 	@NotNull
-	private String nomeNivel;
+	private List<String> nomeNivel;
 	
 	private List<Turma> turmas;
 
-	public Aula atualizar(Long id, AulaRepository aulaRepository, NivelRepository nivelRepository) {
-		Nivel nivel = nivelRepository.findByNome(nomeNivel);
-		Optional<Aula> aula = aulaRepository.findById(id);
-		aula.get().setNome(nome);
-		aula.get().setNivel(nivel);
-		aula.get().setTurmas(turmas);
-		return aula.get();
-	}
+//	public Aula atualizar(Long id, AulaRepository aulaRepository, NivelRepository nivelRepository) {
+//		Nivel nivel = nivelRepository.findByNome(nomeNivel);
+//		Optional<Aula> aula = aulaRepository.findById(id);
+//		aula.get().setNome(nome);
+//		aula.get().setNivel(nivel);
+//		aula.get().setTurmas(turmas);
+//		return aula.get();
+//	}
 }

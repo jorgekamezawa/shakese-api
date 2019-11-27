@@ -18,16 +18,17 @@ public class AulaDtoDetalhada {
 
 	private Long aulaId;
 	private String nome;
-	private Nivel nivel;
+	private List<NivelDto> nivel;
 	private List<TurmaDto> turmas;
 	
 	public AulaDtoDetalhada(Aula aula) {
 		this.aulaId = aula.getAulaId();
 		this.nome = aula.getNome();
-		this.nivel = aula.getNivel();
-		this.turmas = new ArrayList<>();
-		this.turmas.addAll(aula.getTurmas().stream()
-				.map(TurmaDto::new)
-				.collect(Collectors.toList()));
+		this.nivel = new ArrayList<>();
+		this.nivel.addAll(aula.getNivel().stream().map(NivelDto::new).collect(Collectors.toList()));
+//		this.turmas = new ArrayList<>();
+//		this.turmas.addAll(aula.getTurmas().stream()
+//				.map(TurmaDto::new)
+//				.collect(Collectors.toList()));
 	}
 }

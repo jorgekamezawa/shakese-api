@@ -55,7 +55,7 @@ public class AulaController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<AulaDto> cadastrarAula(@RequestBody @Valid AulaForm form, UriComponentsBuilder uriBuilder){
-		Aula aula = form.converter(nivelRepository);
+		Aula aula = form.converter(aulaRepository, nivelRepository);
 		if(aula.getNivel() != null) {
 			aulaRepository.save(aula);
 			URI uri = uriBuilder.path("/aula/{id}").buildAndExpand(aula.getAulaId()).toUri();
@@ -65,25 +65,22 @@ public class AulaController {
 		
 	}
 	
-	@PutMapping("/{id}")
-	@Transactional
-	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form){
-		Optional<Aula> optional = aulaRepository.findById(id);
-		if(optional.isPresent()) {
-			Aula aula = form.atualizar(id, aulaRepository, nivelRepository);
-			return ResponseEntity.ok(new AulaDto(aula));
-		}
-		return ResponseEntity.notFound().build();
-	}
+//	@PutMapping("/{id}")
+//	@Transactional
+//	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form){
+//		Optional<Aula> optional = aulaRepository.findById(id);
+//		if(optional.isPresent()) {
+//			Aula aula = form.atualizar(id, aulaRepository, nivelRepository);
+//			return ResponseEntity.ok(new AulaDto(aula));
+//		}
+//		return ResponseEntity.notFound().build();
+//	}
 	
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id){
 		Optional<Aula> optional = aulaRepository.findById(id);
 		if(optional.isPresent()) {
-			//Aula aula = optional.get();
-			//aula.setNivel(null);
-			//aulaRepository.save(aula);
 			aulaRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}

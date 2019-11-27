@@ -19,65 +19,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.shakese.controller.dto.AlunoDtoDetalhado;
 import com.shakese.controller.dto.AlunoDto;
-import com.shakese.controller.form.AlunoFormAtualizar;
+import com.shakese.controller.dto.AlunoDtoDetalhada;
 import com.shakese.controller.form.AlunoForm;
+import com.shakese.controller.form.AlunoFormAtualizar;
 import com.shakese.modelo.Aluno;
-import com.shakese.modelo.Nivel;
 import com.shakese.repository.AlunoRepository;
 import com.shakese.repository.TurmaRepository;
 
 @RestController
-@RequestMapping("/alunos")
+@RequestMapping("/aluno")
 public class AlunoController {
 
-//	@Autowired
-//	private AlunoRepository alunoRepository;
-//
-//	@Autowired
-//	private TurmaRepository aulaRepository;
-//
+	@Autowired
+	private AlunoRepository alunoRepository;
+	@Autowired
+	private TurmaRepository turmaRepository;
+	
+	
 //	@GetMapping
-//	public List<AlunoDto> listAluno(Nivel nivelAula) {
-//		if (nivelAula == null) {
-//			List<Aluno> aluno = alunoRepository.findAll();
-//			return AlunoDto.converter(aluno);
-//		} else {
-//			List<Aluno> aluno = alunoRepository.findByAulaNivel(nivelAula);
-//			return AlunoDto.converter(aluno);
+//	public List<AlunoDto> listAluno() {
+//		List<Aluno> aluno = alunoRepository.findAll();
+//		return AlunoDto.converter(aluno);
+//	}
+//	
+//	@GetMapping("/{id}")
+//	public ResponseEntity<AlunoDtoDetalhada> detalharAluno(@PathVariable Long id) {
+//		Optional<Aluno> aluno = alunoRepository.findById(id);
+//
+//		if (aluno.isPresent()) {
+//			return ResponseEntity.ok(new AlunoDtoDetalhada(aluno.get()));
 //		}
+//		return ResponseEntity.notFound().build();
 //	}
 //
 //	@PostMapping
 //	@Transactional
-//	public ResponseEntity<AlunoDto> cadastrarAluno(@RequestBody @Valid AlunoForm cadastroAlunoForm,
+//	public ResponseEntity<AlunoDto> cadastrarAluno(@RequestBody @Valid AlunoForm form,
 //			UriComponentsBuilder uriBuilder) {
-//		alunoRepository.save(cadastroAlunoForm.converter(aulaRepository));
+//		alunoRepository.save(form.converter(turmaRepository));
 //
-//		URI uri = uriBuilder.path("/alunos/{id}")
-//				.buildAndExpand(cadastroAlunoForm.converter(aulaRepository).getAlunoId()).toUri();
-//		return ResponseEntity.created(uri).body(new AlunoDto(cadastroAlunoForm.converter(aulaRepository)));
-//	}
-//
-//	@GetMapping("/{id}")
-//	public ResponseEntity<AlunoDtoDetalhado> detalharAluno(@PathVariable Long id) {
-//		Optional<Aluno> aluno = alunoRepository.findById(id);
-//
-//		if (aluno.isPresent()) {
-//			return ResponseEntity.ok(new AlunoDtoDetalhado(aluno.get()));
-//		}
-//		return ResponseEntity.notFound().build();
+//		URI uri = uriBuilder.path("/aluno/{id}")
+//				.buildAndExpand(form.converter(turmaRepository).getAlunoId()).toUri();
+//		return ResponseEntity.created(uri).body(new AlunoDto(form.converter(turmaRepository)));
 //	}
 //
 //	@PutMapping("/{id}")
 //	@Transactional
 //	public ResponseEntity<AlunoDto> atualizarAluno(@PathVariable Long id,
-//			@RequestBody @Valid AlunoFormAtualizar atualizaAlunoForm) {
+//			@RequestBody @Valid AlunoFormAtualizar form) {
 //		Optional<Aluno> optional = alunoRepository.findById(id);
 //
 //		if (optional.isPresent()) {
-//			Aluno aluno = atualizaAlunoForm.atualizar(id, alunoRepository);
+//			Aluno aluno = form.atualizar(id, alunoRepository);
 //			return ResponseEntity.ok(new AlunoDto(aluno));
 //		}
 //		return ResponseEntity.notFound().build();
