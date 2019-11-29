@@ -1,5 +1,6 @@
 package com.shakese.controller.form;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,6 @@ import javax.validation.constraints.NotNull;
 
 import com.shakese.modelo.Aula;
 import com.shakese.modelo.Nivel;
-import com.shakese.modelo.Turma;
 import com.shakese.repository.AulaRepository;
 import com.shakese.repository.NivelRepository;
 
@@ -24,16 +24,17 @@ public class AulaFormAtualizar {
 	private String nome;
 
 	@NotNull
-	private List<String> nomeNivel;
-	
-	private List<Turma> turmas;
+	private List<Long> idNivel;
 
-//	public Aula atualizar(Long id, AulaRepository aulaRepository, NivelRepository nivelRepository) {
-//		Nivel nivel = nivelRepository.findByNome(nomeNivel);
-//		Optional<Aula> aula = aulaRepository.findById(id);
-//		aula.get().setNome(nome);
-//		aula.get().setNivel(nivel);
-//		aula.get().setTurmas(turmas);
-//		return aula.get();
-//	}
+	public Aula atualizar(Long id, AulaRepository aulaRepository, NivelRepository nivelRepository) {
+		List<Nivel> niveis = new ArrayList<Nivel>();
+		Optional<Aula> aula = aulaRepository.findById(id);
+		for (Long nivelId : idNivel) {
+			Optional<Nivel> nivel = nivelRepository.findById(nivelId);
+			niveis.add(nivel.get());
+		}
+		aula.get().setNome(nome);
+		aula.get().setNiveis(niveis);
+		return aula.get();
+	}
 }

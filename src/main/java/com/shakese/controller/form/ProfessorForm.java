@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
-import com.shakese.modelo.Aluno;
 import com.shakese.modelo.Pessoa;
+import com.shakese.modelo.Professor;
 import com.shakese.modelo.Turma;
 import com.shakese.repository.TurmaRepository;
 
@@ -18,26 +18,26 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlunoForm {
+public class ProfessorForm {
 	
 	@NotNull
 	private Pessoa pessoa;
+	
 	@NotNull
-	private double desconto;
+	private double salario;
+	
 	@NotNull
 	private List<Long> idTurmas;
 	
-	public Aluno converter(TurmaRepository turmaRepository) {
-		List<Turma> turmasAluno = new ArrayList<Turma>();
+	public Professor cadastrar(TurmaRepository turmaRepository) {
+		List<Turma> turmasProfessor = new ArrayList<Turma>();
 		
 		for (Long id : idTurmas) {
 			Optional<Turma> turma =turmaRepository.findById(id);
-			turmasAluno.add(turma.get());
+			turmasProfessor.add(turma.get());
 		}
-
 		
-		return new Aluno(pessoa, desconto, turmasAluno);
+		return new Professor(pessoa, salario, turmasProfessor);
 	}
-	
 
 }

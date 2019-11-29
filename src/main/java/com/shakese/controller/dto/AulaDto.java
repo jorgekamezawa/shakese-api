@@ -23,7 +23,7 @@ public class AulaDto {
 		this.id = aula.getAulaId();
 		this.nome = aula.getNome();
 		this.nivel = new ArrayList<>();
-		this.nivel.addAll(aula.getNivel().stream().map(NivelDto::new).collect(Collectors.toList()));
+		this.nivel.addAll(aula.getNiveis().stream().map(NivelDto::new).collect(Collectors.toList()));
 	}
 	
 	public static List<AulaDto> converter(List<Aula> aulas) {

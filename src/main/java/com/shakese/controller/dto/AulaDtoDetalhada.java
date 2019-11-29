@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.shakese.modelo.Aula;
-import com.shakese.modelo.Nivel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,8 +24,8 @@ public class AulaDtoDetalhada {
 		this.aulaId = aula.getAulaId();
 		this.nome = aula.getNome();
 		this.nivel = new ArrayList<>();
-		this.nivel.addAll(aula.getNivel().stream().map(NivelDto::new).collect(Collectors.toList()));
-//		this.turmas = new ArrayList<>();
+		this.nivel.addAll(aula.getNiveis().stream().map(NivelDto::new).collect(Collectors.toList()));
+		this.turmas = new ArrayList<>();
 //		this.turmas.addAll(aula.getTurmas().stream()
 //				.map(TurmaDto::new)
 //				.collect(Collectors.toList()));

@@ -34,8 +34,4 @@ public class Nivel implements Serializable {
 	public Nivel(String nome) {
 		this.nome = nome;
 	}
-	
-	
-	
-
 }

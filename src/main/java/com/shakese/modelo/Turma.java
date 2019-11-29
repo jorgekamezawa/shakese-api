@@ -1,17 +1,12 @@
 package com.shakese.modelo;
 
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -44,20 +39,6 @@ public class Turma {
 	
 	//@OneToOne
 	//private Calendario calendario;
-	
-	@ManyToOne
-	private Professor professor;
-	
-//	@ManyToMany(mappedBy = "turmas", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//	private List<Aluno> alunos;
-
-	public Turma(Aula aula, Nivel nivel, double preco, Professor professor, List<Aluno> aluno) {
-		this.aula = aula;
-		this.nivel = nivel;
-		this.preco = preco;
-		this.professor = professor;
-		//this.alunos = aluno;
-	}
 	
 	public Turma(Aula aula, Nivel nivel, double preco) {
 		this.aula = aula;

@@ -6,13 +6,13 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -37,24 +37,15 @@ public class Aula implements Serializable {
 	@Column(name = "nome")
 	private String nome;
 	
-	@ManyToMany(cascade = CascadeType.MERGE)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinTable(name = "tbl_aula_nivel", joinColumns = {
 	@JoinColumn(name = "aula_id", referencedColumnName = "aulaId")},
 	inverseJoinColumns = {@JoinColumn(name = "nivel_id", referencedColumnName = "nivelId")})
-	private List<Nivel> nivel;
+	private List<Nivel> niveis;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<Turma> turmas;
-	
-	public Aula (String nome, List<Nivel> nivel, List<Turma> turma) {
+	public Aula (String nome, List<Nivel> niveis) {
 		this.nome = nome;
-		this.nivel = nivel;
-		this.turmas = turma;
-	}
-	
-	public Aula (String nome, List<Nivel> nivel) {
-		this.nome = nome;
-		this.nivel = nivel;
+		this.niveis = niveis;
 	}
 
 }

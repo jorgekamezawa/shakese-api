@@ -3,6 +3,7 @@ package com.shakese.modelo;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,7 +29,19 @@ public class Funcionario implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long funcionarioId;
 	
+	@Embedded
+	private Pessoa pessoa;
+	
 	@Column(name = "cargo")
 	private String cargo;
+	
+	@Column(name = "salario")
+	private double salario;
+	
+	public Funcionario(Pessoa pessoa, String cargo, double salario) {
+		this.pessoa = pessoa;
+		this.cargo = cargo;
+		this.salario = salario;
+	}
 
 }

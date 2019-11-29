@@ -33,7 +33,13 @@ public class TurmaForm {
 		
 		Optional<Nivel> nivel = nivelRepository.findById(nivelId);
 		
-		return new Turma(aula.get(), nivel.get(), preco);
+		for (Nivel niveis : aula.get().getNiveis()) {
+			if (nivel.get().getNome() == niveis.getNome()) {
+				return new Turma(aula.get(), nivel.get(), preco);
+			}
+		}
+		
+		return new Turma(aula.get(), null, preco);
 	}
 
 }

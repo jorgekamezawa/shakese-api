@@ -24,17 +24,17 @@ public class AulaForm {
 	private String nome;
 
 	@NotNull
-	private List<String> nomeNivel;
+	private List<Long> idNivel;
 
 	public Aula converter(AulaRepository aulaRepository, NivelRepository nivelRepository) {
 		List<Nivel> niveis = new ArrayList<Nivel>();
-		for (String nome : nomeNivel) {
-			Nivel nivel = nivelRepository.findByNome(nome);
-			niveis.add(nivel);
+		for (Long id : idNivel) {
+			Optional<Nivel> nivel = nivelRepository.findById(id);
+			niveis.add(nivel.get());
 		}
 		Optional<Aula> optional = aulaRepository.findByNome(nome);
 		if(optional.isPresent()) {
-			optional.get().getNivel().addAll(niveis);
+			optional.get().getNiveis().addAll(niveis);
 			return optional.get();
 		}
 		

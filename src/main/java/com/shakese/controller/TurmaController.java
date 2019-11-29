@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.shakese.controller.dto.TurmaDto;
+import com.shakese.controller.dto.TurmaDtoDetalhada;
 import com.shakese.controller.form.TurmaForm;
 import com.shakese.controller.form.TurmaFormAtualizar;
 import com.shakese.modelo.Turma;
@@ -41,17 +42,17 @@ public class TurmaController {
 	private NivelRepository nivelRepository;
 
 	@GetMapping
-	public List<TurmaDto> listarAulas() {
+	public List<TurmaDto> listarTurmas() {
 		List<Turma> turma = turmaRepository.findAll();
 		return TurmaDto.converter(turma);
 	}
 	
 	@GetMapping("/{id}")
 	@Transactional
-	public ResponseEntity<TurmaDto> listaDetalhada(@PathVariable Long id){
+	public ResponseEntity<TurmaDtoDetalhada> listarTurma(@PathVariable Long id){
 		Optional<Turma> aula = turmaRepository.findById(id);
 		if(aula.isPresent()) {
-			return ResponseEntity.ok(new TurmaDto(aula.get()));
+			return ResponseEntity.ok(new TurmaDtoDetalhada(aula.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -62,9 +63,21 @@ public class TurmaController {
 		UriComponentsBuilder uriBuilder) {
 		Turma turma = form.converter(aulaRepository, nivelRepository);
 		if(turma.getAula() != null) {
-			turmaRepository.save(turma);
-			URI uri = uriBuilder.path("/aulas/{id}").buildAndExpand(turma.getTurmaId()).toUri();
-			return ResponseEntity.created(uri).body(new TurmaDto(turma));
+			List<TurmaDto> turmas = listarTurmas();
+			boolean disponibilidade = true;
+			for (TurmaDto turmaDto : turmas) {
+				if(turma.getNivel().getNome() == turmaDto.getNivelNome() &&
+						turma.getAula().getNome() == turmaDto.getAulaNome()){
+							disponibilidade = false;
+							break;
+						}
+			}
+			if(disponibilidade) {
+				turmaRepository.save(turma);
+				URI uri = uriBuilder.path("/aulas/{id}").buildAndExpand(turma.getTurmaId()).toUri();
+				return ResponseEntity.created(uri).body(new TurmaDto(turma));
+			}
+			return ResponseEntity.notFound().build();
 		}
 			return ResponseEntity.notFound().build();
 	}

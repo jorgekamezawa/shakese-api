@@ -6,6 +6,4 @@ import com.shakese.modelo.Aluno;
 
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
-	//List<Aluno> findByAulaNivel(Niveis nivel);
-
 }

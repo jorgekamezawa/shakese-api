@@ -45,12 +45,15 @@ public class Aluno implements Serializable { // pesquisar sobre serealizable
 	private double desconto;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
-	@JoinTable(name = "tbl_aluno_turma", joinColumns = 
-	@JoinColumn(name = "aluno_id", referencedColumnName = "alunoId", foreignKey = 
-	@ForeignKey(name = "fk_aluno_turma_aluno")), inverseJoinColumns = 
-	@JoinColumn(name = "turma_id", referencedColumnName = "turmaId", foreignKey = 
-	@ForeignKey(name = "fk_aluno_turma_turma")))
+	@JoinTable(name = "tbl_aluno_turma", joinColumns = {
+	@JoinColumn(name = "aluno_id", referencedColumnName = "alunoId")},
+	inverseJoinColumns = {@JoinColumn(name = "turma_id", referencedColumnName = "turmaId")})
+//	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
+//	@JoinTable(name = "tbl_aluno_turma", joinColumns = 
+//	@JoinColumn(name = "aluno_id", referencedColumnName = "alunoId", foreignKey = 
+//	@ForeignKey(name = "fk_aluno_turma_aluno")), inverseJoinColumns = 
+//	@JoinColumn(name = "turma_id", referencedColumnName = "turmaId", foreignKey = 
+//	@ForeignKey(name = "fk_aluno_turma_turma")))
 	private List<Turma> turmas;
 
 	public Aluno(Pessoa pessoa, double desconto, List<Turma> turmas) {

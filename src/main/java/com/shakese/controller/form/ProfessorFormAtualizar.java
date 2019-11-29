@@ -6,10 +6,10 @@ import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
-import com.shakese.modelo.Aluno;
 import com.shakese.modelo.Pessoa;
+import com.shakese.modelo.Professor;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.AlunoRepository;
+import com.shakese.repository.ProfessorRepository;
 import com.shakese.repository.TurmaRepository;
 
 import lombok.AllArgsConstructor;
@@ -19,26 +19,31 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlunoFormAtualizar {
+public class ProfessorFormAtualizar {
 
 	@NotNull
 	private Pessoa pessoa;
+	
 	@NotNull
-	private double desconto;
+	private double salario;
+	
 	@NotNull
 	private List<Long> idTurmas;
 	
-	public Aluno atualizar(Long id, AlunoRepository alunoRepository, TurmaRepository turmaRepository) {
-		List<Turma> turmasAluno = new ArrayList<Turma>();
+	public Professor atualizar(Long id, ProfessorRepository professorRepository,
+			TurmaRepository turmaRepository) {
+		List<Turma> turmasProfessor = new ArrayList<Turma>();
+		
 		for (Long idTurma : idTurmas) {
 			Optional<Turma> turma =turmaRepository.findById(idTurma);
-			turmasAluno.add(turma.get());
+			turmasProfessor.add(turma.get());
 		}
 		
-		Optional<Aluno> aluno = alunoRepository.findById(id);
-		aluno.get().setPessoa(pessoa);
-		aluno.get().setDesconto(desconto);
-		aluno.get().setTurmas(turmasAluno);
-		return aluno.get();
+		Optional<Professor> professor = professorRepository.findById(id);
+		professor.get().setPessoa(pessoa);
+		professor.get().setSalario(salario);
+		professor.get().setTurmas(turmasProfessor);
+		
+		return professor.get();
 	}
 }

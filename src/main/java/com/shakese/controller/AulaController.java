@@ -56,7 +56,7 @@ public class AulaController {
 	@Transactional
 	public ResponseEntity<AulaDto> cadastrarAula(@RequestBody @Valid AulaForm form, UriComponentsBuilder uriBuilder){
 		Aula aula = form.converter(aulaRepository, nivelRepository);
-		if(aula.getNivel() != null) {
+		if(aula.getNiveis() != null) {
 			aulaRepository.save(aula);
 			URI uri = uriBuilder.path("/aula/{id}").buildAndExpand(aula.getAulaId()).toUri();
 			return ResponseEntity.created(uri).body(new AulaDto(aula));
@@ -65,16 +65,17 @@ public class AulaController {
 		
 	}
 	
-//	@PutMapping("/{id}")
-//	@Transactional
-//	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form){
-//		Optional<Aula> optional = aulaRepository.findById(id);
-//		if(optional.isPresent()) {
-//			Aula aula = form.atualizar(id, aulaRepository, nivelRepository);
-//			return ResponseEntity.ok(new AulaDto(aula));
-//		}
-//		return ResponseEntity.notFound().build();
-//	}
+	@PutMapping("/{id}")
+	@Transactional
+	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, 
+			@RequestBody @Valid AulaFormAtualizar form){
+		Optional<Aula> optional = aulaRepository.findById(id);
+		if(optional.isPresent()) {
+			Aula aula = form.atualizar(id, aulaRepository, nivelRepository);
+			return ResponseEntity.ok(new AulaDto(aula));
+		}
+		return ResponseEntity.notFound().build();
+	}
 	
 	@DeleteMapping("/{id}")
 	@Transactional
