@@ -40,6 +40,9 @@ public class Turma {
 	//@OneToOne
 	//private Calendario calendario;
 	
+	@Column(name = "status")
+	private boolean status = true;
+	
 	public Turma(Aula aula, Nivel nivel, double preco) {
 		this.aula = aula;
 		this.nivel = nivel;

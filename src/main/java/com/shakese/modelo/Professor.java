@@ -38,6 +38,9 @@ public class Professor implements Serializable {
 	@Column(name = "salario")
 	private double salario;
 	
+	@Column(name = "status")
+	private boolean status = true;
+	
 	@OneToMany(cascade = CascadeType.MERGE)
 	private List<Turma> turmas;
 	

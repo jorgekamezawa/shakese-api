@@ -3,6 +3,7 @@ package com.shakese.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -38,15 +39,18 @@ public class FuncionarioController {
 
 	@GetMapping
 	public List<FuncionarioDto> listarFuncionarios(){
-		List<Funcionario> funcionario = funcionarioRepository.findAll();
-		return FuncionarioDto.converter(funcionario);
+		List<Funcionario> funcionarios = funcionarioRepository.findAll();
+		return FuncionarioDto.converter(
+				funcionarios.stream()
+				.filter(Funcionario::isStatus)
+				.collect(Collectors.toList()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<FuncionarioDtoDetalhado> listarFuncionario(@PathVariable Long id){
-		Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
-		if(funcionario.isPresent()) {
-			return ResponseEntity.ok(new FuncionarioDtoDetalhado(funcionario.get()));
+		Optional<Funcionario> optional = funcionarioRepository.findById(id);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			return ResponseEntity.ok(new FuncionarioDtoDetalhado(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -69,7 +73,7 @@ public class FuncionarioController {
 	public ResponseEntity<FuncionarioDto> atualizarFuncionario(@PathVariable Long id,
 			@RequestBody @Valid FuncionarioFormAtualizar form){
 		Optional<Funcionario> optional = funcionarioRepository.findById(id);
-		if(optional.isPresent()) {
+		if(optional.isPresent() && optional.get().isStatus()) {
 			Funcionario funcionario = form.atualizar(id, funcionarioRepository);
 			return ResponseEntity.ok(new FuncionarioDto(funcionario));
 		}
@@ -79,9 +83,9 @@ public class FuncionarioController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarFuncionario(@PathVariable Long id){
-		Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
-		if(funcionario.isPresent()) {
-			funcionarioRepository.deleteById(id);
+		Optional<Funcionario> optional = funcionarioRepository.findById(id);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			optional.get().setStatus(false);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

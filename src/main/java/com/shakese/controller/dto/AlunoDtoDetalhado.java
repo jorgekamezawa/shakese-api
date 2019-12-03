@@ -31,18 +31,20 @@ public class AlunoDtoDetalhado {
 	private List<TurmaDto> turmas;
 	
 	public AlunoDtoDetalhado(Aluno aluno) {
-		this.id = aluno.getAlunoId();
-		this.nome = aluno.getPessoa().getNome();
-		this.cpf = aluno.getPessoa().getCpf();
-		this.dataNascimento = aluno.getPessoa().getDataNascimento();
-		this.sexo = aluno.getPessoa().getSexo();
-		this.celular = aluno.getPessoa().getCelular();
-		this.falta = aluno.getPessoa().getFalta();
-		this.dataInicio = aluno.getPessoa().getDataInicio();
-		this.endereco = aluno.getPessoa().getEndereco();
-		this.desconto = aluno.getDesconto();
-		this.turmas = new ArrayList<>();
-		this.turmas.addAll(aluno.getTurmas().stream().map(TurmaDto::new)
-				.collect(Collectors.toList()));
+		if(aluno.isStatus()) {
+			this.id = aluno.getAlunoId();
+			this.nome = aluno.getPessoa().getNome();
+			this.cpf = aluno.getPessoa().getCpf();
+			this.dataNascimento = aluno.getPessoa().getDataNascimento();
+			this.sexo = aluno.getPessoa().getSexo();
+			this.celular = aluno.getPessoa().getCelular();
+			this.falta = aluno.getPessoa().getFalta();
+			this.dataInicio = aluno.getPessoa().getDataInicio();
+			this.endereco = aluno.getPessoa().getEndereco();
+			this.desconto = aluno.getDesconto();
+			this.turmas = new ArrayList<>();
+			this.turmas.addAll(aluno.getTurmas().stream().map(TurmaDto::new)
+					.collect(Collectors.toList()));
+		}
 	}
 }

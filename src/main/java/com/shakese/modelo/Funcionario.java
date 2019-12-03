@@ -38,6 +38,9 @@ public class Funcionario implements Serializable {
 	@Column(name = "salario")
 	private double salario;
 	
+	@Column(name = "status")
+	private boolean status = true;
+	
 	public Funcionario(Pessoa pessoa, String cargo, double salario) {
 		this.pessoa = pessoa;
 		this.cargo = cargo;

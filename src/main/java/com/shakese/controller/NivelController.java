@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.shakese.controller.dto.NivelDto;
-import com.shakese.controller.form.NivelFormAtualizar;
 import com.shakese.controller.form.NivelForm;
+import com.shakese.controller.form.NivelFormAtualizar;
 import com.shakese.modelo.Nivel;
 import com.shakese.repository.NivelRepository;
 
@@ -34,15 +34,15 @@ public class NivelController {
 	
 	@GetMapping
 	public List<NivelDto> listarNiveis(){
-		List<Nivel> nivel = nivelRepository.findAll();
-		return NivelDto.converter(nivel);
+		List<Nivel> niveis = nivelRepository.findAll();
+		return NivelDto.converter(niveis);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<NivelDto> listarDetalheNiveis(@PathVariable Long id){
-		Optional<Nivel> nivel = nivelRepository.findById(id);
-		if(nivel.isPresent()) {
-			return ResponseEntity.ok(new NivelDto(nivel.get()));
+		Optional<Nivel> optional = nivelRepository.findById(id);
+		if(optional.isPresent()) {
+			return ResponseEntity.ok(new NivelDto(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -71,8 +71,8 @@ public class NivelController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarNivel(@PathVariable Long id){
-		Optional<Nivel> nivel = nivelRepository.findById(id);
-		if(nivel.isPresent()) {
+		Optional<Nivel> optional = nivelRepository.findById(id);
+		if(optional.isPresent()) {
 			nivelRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}

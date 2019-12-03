@@ -7,18 +7,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Fetch;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,23 +40,18 @@ public class Aluno implements Serializable { // pesquisar sobre serealizable
 	@Column(name = "desconto")
 	private double desconto;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+	@ManyToMany(cascade = CascadeType.MERGE)
 	@JoinTable(name = "tbl_aluno_turma", joinColumns = {
 	@JoinColumn(name = "aluno_id", referencedColumnName = "alunoId")},
 	inverseJoinColumns = {@JoinColumn(name = "turma_id", referencedColumnName = "turmaId")})
-//	@Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
-//	@JoinTable(name = "tbl_aluno_turma", joinColumns = 
-//	@JoinColumn(name = "aluno_id", referencedColumnName = "alunoId", foreignKey = 
-//	@ForeignKey(name = "fk_aluno_turma_aluno")), inverseJoinColumns = 
-//	@JoinColumn(name = "turma_id", referencedColumnName = "turmaId", foreignKey = 
-//	@ForeignKey(name = "fk_aluno_turma_turma")))
 	private List<Turma> turmas;
+	
+	@Column(name = "status")
+	private boolean status = true;
 
 	public Aluno(Pessoa pessoa, double desconto, List<Turma> turmas) {
 		this.pessoa = pessoa;
 		this.desconto = desconto;
 		this.turmas = turmas;
 	}
-	
-	
 }

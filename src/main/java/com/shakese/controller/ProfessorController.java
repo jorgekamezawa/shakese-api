@@ -3,6 +3,7 @@ package com.shakese.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -41,15 +42,18 @@ public class ProfessorController {
 	
 	@GetMapping
 	public List<ProfessorDto> listarProfessores(){
-		List<Professor> professor = professorRepository.findAll();
-		return ProfessorDto.converter(professor);
+		List<Professor> professores = professorRepository.findAll();
+		return ProfessorDto.converter(
+				professores.stream()
+				.filter(Professor::isStatus)
+				.collect(Collectors.toList()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<ProfessorDtoDetalhado> listarProfessor(@PathVariable Long id){
-		Optional<Professor> professor = professorRepository.findById(id);
-		if(professor.isPresent()) {
-			return ResponseEntity.ok(new ProfessorDtoDetalhado(professor.get()));
+		Optional<Professor> optional = professorRepository.findById(id);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			return ResponseEntity.ok(new ProfessorDtoDetalhado(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -72,7 +76,7 @@ public class ProfessorController {
 	public ResponseEntity<ProfessorDto> atualizarProfessor(@PathVariable Long id,
 			@RequestBody @Valid ProfessorFormAtualizar form){
 		Optional<Professor> optional = professorRepository.findById(id);
-		if(optional.isPresent()) {
+		if(optional.isPresent() && optional.get().isStatus()) {
 			Professor professor = form.atualizar(id, professorRepository, turmaRepository);
 			return ResponseEntity.ok(new ProfessorDto(professor));
 		}
@@ -82,9 +86,9 @@ public class ProfessorController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarProfessor(@PathVariable Long id){
-		Optional<Professor> professor = professorRepository.findById(id);
-		if(professor.isPresent()) {
-			professorRepository.deleteById(id);
+		Optional<Professor> optional = professorRepository.findById(id);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			optional.get().setStatus(false);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

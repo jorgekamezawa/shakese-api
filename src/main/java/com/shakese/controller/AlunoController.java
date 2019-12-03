@@ -3,6 +3,7 @@ package com.shakese.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -42,16 +43,20 @@ public class AlunoController {
 	
 	@GetMapping
 	public List<AlunoDto> listAluno() {
-		List<Aluno> aluno = alunoRepository.findAll();
-		return AlunoDto.converter(aluno);
+		List<Aluno> alunos = alunoRepository.findAll();
+		
+		return AlunoDto.converter(
+				alunos.stream()
+				.filter(Aluno::isStatus)
+				.collect(Collectors.toList()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<AlunoDtoDetalhado> detalharAluno(@PathVariable Long id) {
-		Aluno aluno = alunoRepository.getOne(id);
+		Optional<Aluno> optional = alunoRepository.findById(id);
 
-		if (aluno != null) {
-			return ResponseEntity.ok(new AlunoDtoDetalhado(aluno));
+		if (optional.isPresent() && optional.get().isStatus()) {
+			return ResponseEntity.ok(new AlunoDtoDetalhado(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -74,7 +79,7 @@ public class AlunoController {
 			@RequestBody @Valid AlunoFormAtualizar form) {
 		Optional<Aluno> optional = alunoRepository.findById(id);
 
-		if (optional.isPresent()) {
+		if (optional.isPresent() && optional.get().isStatus()) {
 			Aluno aluno = form.atualizar(id, alunoRepository, turmaRepository);
 			return ResponseEntity.ok(new AlunoDto(aluno));
 		}
@@ -85,8 +90,9 @@ public class AlunoController {
 	@Transactional
 	public ResponseEntity<?> deletarAluno(@PathVariable Long id) {
 		Optional<Aluno> optional = alunoRepository.findById(id);
-		if (optional.isPresent()) {
-			alunoRepository.deleteById(id);
+		
+		if (optional.isPresent() && optional.get().isStatus()) {
+			optional.get().setStatus(false);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

@@ -3,6 +3,7 @@ package com.shakese.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -43,16 +44,19 @@ public class TurmaController {
 
 	@GetMapping
 	public List<TurmaDto> listarTurmas() {
-		List<Turma> turma = turmaRepository.findAll();
-		return TurmaDto.converter(turma);
+		List<Turma> turmas = turmaRepository.findAll();
+		return TurmaDto.converter(
+				turmas.stream()
+				.filter(Turma::isStatus)
+				.collect(Collectors.toList()));
 	}
 	
 	@GetMapping("/{id}")
 	@Transactional
 	public ResponseEntity<TurmaDtoDetalhada> listarTurma(@PathVariable Long id){
-		Optional<Turma> aula = turmaRepository.findById(id);
-		if(aula.isPresent()) {
-			return ResponseEntity.ok(new TurmaDtoDetalhada(aula.get()));
+		Optional<Turma> optional = turmaRepository.findById(id);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			return ResponseEntity.ok(new TurmaDtoDetalhada(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -87,7 +91,7 @@ public class TurmaController {
 	public ResponseEntity<TurmaDto> atualizarAula(@PathVariable Long id,
 			@RequestBody @Valid TurmaFormAtualizar form){
 		Optional<Turma> optional = turmaRepository.findById(id);
-		if (optional.isPresent()) {
+		if (optional.isPresent() && optional.get().isStatus()) {
 			Turma turma = form.atualizar(id, turmaRepository, aulaRepository, nivelRepository);
 			return ResponseEntity.ok(new TurmaDto(turma));
 		}
@@ -98,8 +102,9 @@ public class TurmaController {
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id){
 		Optional<Turma> optional = turmaRepository.findById(id);
-		if(optional.isPresent()) {
-			turmaRepository.deleteById(id);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			optional.get().setStatus(false);
+			optional.get().setNivel(null);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

@@ -3,6 +3,7 @@ package com.shakese.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -24,8 +25,10 @@ import com.shakese.controller.dto.AulaDtoDetalhada;
 import com.shakese.controller.form.AulaForm;
 import com.shakese.controller.form.AulaFormAtualizar;
 import com.shakese.modelo.Aula;
+import com.shakese.modelo.Turma;
 import com.shakese.repository.AulaRepository;
 import com.shakese.repository.NivelRepository;
+import com.shakese.repository.TurmaRepository;
 
 @RestController
 @RequestMapping("/aula")
@@ -37,17 +40,24 @@ public class AulaController {
 	@Autowired
 	private NivelRepository nivelRepository;
 	
+	@Autowired
+	private TurmaRepository turmaRepository;
+	
 	@GetMapping
 	public List<AulaDto> listarAulas(){
 		List<Aula> aulas = aulaRepository.findAll();
-		return AulaDto.converter(aulas);
+		return AulaDto.converter(
+				aulas.stream()
+				.filter(Aula::isStatus)
+				.collect(Collectors.toList()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<AulaDtoDetalhada> listarAulaDetalhada(@PathVariable Long id){
-		Optional<Aula> aula = aulaRepository.findById(id);
-		if(aula.isPresent()) {
-			return ResponseEntity.ok(new AulaDtoDetalhada(aula.get()));
+		Optional<Aula> optional = aulaRepository.findById(id);
+		
+		if(optional.isPresent() && optional.get().isStatus()) {
+			return ResponseEntity.ok(new AulaDtoDetalhada(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -70,8 +80,8 @@ public class AulaController {
 	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, 
 			@RequestBody @Valid AulaFormAtualizar form){
 		Optional<Aula> optional = aulaRepository.findById(id);
-		if(optional.isPresent()) {
-			Aula aula = form.atualizar(id, aulaRepository, nivelRepository);
+		if(optional.isPresent() && optional.get().isStatus()) {
+			Aula aula = form.atualizar(id, aulaRepository, nivelRepository, turmaRepository);
 			return ResponseEntity.ok(new AulaDto(aula));
 		}
 		return ResponseEntity.notFound().build();
@@ -81,8 +91,10 @@ public class AulaController {
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id){
 		Optional<Aula> optional = aulaRepository.findById(id);
-		if(optional.isPresent()) {
-			aulaRepository.deleteById(id);
+		Turma turma = turmaRepository.findByAulaNomeAndStatusTrue(optional.get().getNome());
+		if(optional.isPresent() && optional.get().isStatus() && turma == null) {
+			optional.get().setStatus(false);
+			optional.get().setNiveis(null);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();
