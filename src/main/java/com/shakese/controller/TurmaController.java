@@ -1,6 +1,7 @@
 package com.shakese.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,7 +25,9 @@ import com.shakese.controller.dto.TurmaDto;
 import com.shakese.controller.dto.TurmaDtoDetalhada;
 import com.shakese.controller.form.TurmaForm;
 import com.shakese.controller.form.TurmaFormAtualizar;
+import com.shakese.modelo.Aluno;
 import com.shakese.modelo.Turma;
+import com.shakese.repository.AlunoRepository;
 import com.shakese.repository.AulaRepository;
 import com.shakese.repository.NivelRepository;
 import com.shakese.repository.TurmaRepository;
@@ -35,12 +38,12 @@ public class TurmaController {
 
 	@Autowired
 	private TurmaRepository turmaRepository;
-	
 	@Autowired
 	private AulaRepository aulaRepository;
-	
 	@Autowired
 	private NivelRepository nivelRepository;
+	@Autowired
+	private AlunoRepository alunoRepository;
 
 	@GetMapping
 	public List<TurmaDto> listarTurmas() {
@@ -102,11 +105,27 @@ public class TurmaController {
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id){
 		Optional<Turma> optional = turmaRepository.findById(id);
+		List<Aluno> alunos = alunoRepository.findAll();
+
 		if(optional.isPresent() && optional.get().isStatus()) {
+			for (Aluno aluno : alunos) {
+				Aluno a = new Aluno(aluno.getAlunoId(), aluno.getPessoa(), aluno.getDesconto());
+				List<Turma> novasTurmas = new ArrayList<>();
+				for (Turma turma : aluno.getTurmas()) {
+					if(turma.getTurmaId() != id) {
+						novasTurmas.add(turma);
+					}
+				}
+				a.setTurmas(novasTurmas);
+				alunoRepository.save(a);
+			}
+			
 			optional.get().setStatus(false);
 			optional.get().setNivel(null);
 			return ResponseEntity.ok().build();
 		}
+
+		
 		return ResponseEntity.notFound().build();
 	}
 }

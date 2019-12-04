@@ -1,6 +1,5 @@
 package com.shakese.controller.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,15 +17,11 @@ public class AlunoDto {
 	private Long id;
 	private String nome;
 	private String celular;
-	private List<TurmaDto> turmas;
 	
 	public AlunoDto (Aluno aluno) {
 		this.id = aluno.getAlunoId();
 		this.nome = aluno.getPessoa().getNome();
 		this.celular = aluno.getPessoa().getCelular();
-		this.turmas = new ArrayList<>();
-		this.turmas.addAll(aluno.getTurmas().stream().map(TurmaDto::new)
-				.collect(Collectors.toList()));
 	}
 	
 	public static List<AlunoDto> converter(List<Aluno> alunos){

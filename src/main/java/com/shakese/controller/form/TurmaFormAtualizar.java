@@ -35,20 +35,21 @@ public class TurmaFormAtualizar {
 		Optional<Aula> aula = aulaRepository.findById(aulaId);
 		Optional<Nivel> nivel = nivelRepository.findById(nivelId);
 		Optional<Turma> turma = turmaRepository.findById(id);
-		turma.get().setAula(aula.get());
-		turma.get().setPreco(this.preco);
 		
 		List<Turma> turmas = turmaRepository.findAll();
 		for (Turma turma2 : turmas) {
-			if(turma2.isStatus() 
+			if(turma2.isStatus() && turma2.getTurmaId() != id 
 					&& turma2.getAula().getNome().equals(aula.get().getNome()) 
-					&& turma2.getNivel().getNome().equals(nivel.get().getNome()) ) {
+					&& turma2.getNivel().getNome().equals(nivel.get().getNome())) {
 				return null;
 			}
 		}
+		
 		for (Nivel niveis : aula.get().getNiveis()) {
 			if (nivel.get().getNome() == niveis.getNome()) {
 				turma.get().setNivel(nivel.get());
+				turma.get().setAula(aula.get());
+				turma.get().setPreco(this.preco);
 				return turma.get();
 			}
 		}

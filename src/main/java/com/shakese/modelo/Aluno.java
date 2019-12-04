@@ -54,4 +54,10 @@ public class Aluno implements Serializable { // pesquisar sobre serealizable
 		this.desconto = desconto;
 		this.turmas = turmas;
 	}
+	
+	public Aluno(Long id, Pessoa pessoa, double desconto) {
+		this.alunoId = id;
+		this.pessoa = pessoa;
+		this.desconto = desconto;
+	}
 }
