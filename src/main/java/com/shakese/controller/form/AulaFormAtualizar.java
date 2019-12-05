@@ -24,38 +24,37 @@ public class AulaFormAtualizar {
 
 	@NotNull
 	private String nome;
-
 	@NotNull
 	private List<Long> idNivel;
 
-	public Aula atualizar(Long id, AulaRepository aulaRepository, 
-			NivelRepository nivelRepository, TurmaRepository turmaRepository) {
-		
+	public Aula atualizar(Long id, AulaRepository aulaRepository,
+			NivelRepository nivelRepository,
+			TurmaRepository turmaRepository) {
 		Optional<Aula> aula = aulaRepository.findById(id);
-		List<Turma> turmas = turmaRepository.findAll();	
-		
+		List<Turma> turmas = turmaRepository.findAll();
+
 		List<Nivel> nivelTurmas = new ArrayList<>();
 		for (Turma turma : turmas) {
-			if(turma.isStatus() && turma.getAula().getNome().equals(nome)) {
+			if (turma.isStatus() && turma.getAula().getNome().equals(nome)) {
 				nivelTurmas.add(turma.getNivel());
-			}		
+			}
 		}
-				
+
 		List<Nivel> niveis = new ArrayList<Nivel>();
 		for (Long nivelId : idNivel) {
 			Optional<Nivel> nivel = nivelRepository.findById(nivelId);
 			niveis.add(nivel.get());
 		}
-		
-		int count = 0;
+
+		int validar = 0;
 		for (Nivel nivelTurma : nivelTurmas) {
 			for (Nivel nivel : niveis) {
-				if(nivelTurma.getNome().equals(nivel.getNome()))
-					count++;
+				if (nivelTurma.getNome().equals(nivel.getNome()))
+					validar++;
 			}
 		}
-		
-		if(count<nivelTurmas.size())
+
+		if (validar < nivelTurmas.size())
 			return null;
 		else {
 			aula.get().setNome(nome);
@@ -63,6 +62,5 @@ public class AulaFormAtualizar {
 
 			return aula.get();
 		}
-		
 	}
 }

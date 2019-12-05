@@ -39,18 +39,14 @@ public class AlunoController {
 	private TurmaRepository turmaRepository;
 	@Autowired
 	private EnderecoRepository enderecoRepository;
-	
-	
+
 	@GetMapping
-	public List<AlunoDto> listAluno() {
+	public List<AlunoDto> listarAlunos() {
 		List<Aluno> alunos = alunoRepository.findAll();
-		
-		return AlunoDto.converter(
-				alunos.stream()
-				.filter(Aluno::isStatus)
-				.collect(Collectors.toList()));
+
+		return AlunoDto.converter(alunos.stream().filter(Aluno::isStatus).collect(Collectors.toList()));
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<AlunoDtoDetalhado> detalharAluno(@PathVariable Long id) {
 		Optional<Aluno> optional = alunoRepository.findById(id);
@@ -65,18 +61,16 @@ public class AlunoController {
 	@Transactional
 	public ResponseEntity<AlunoDto> cadastrarAluno(@RequestBody @Valid AlunoForm form,
 			UriComponentsBuilder uriBuilder) {
-		alunoRepository.save(form.converter(turmaRepository));
+		alunoRepository.save(form.cadastrar(turmaRepository));
 		enderecoRepository.save(form.getPessoa().getEndereco());
 
-		URI uri = uriBuilder.path("/aluno/{id}")
-				.buildAndExpand(form.converter(turmaRepository).getAlunoId()).toUri();
-		return ResponseEntity.created(uri).body(new AlunoDto(form.converter(turmaRepository)));
+		URI uri = uriBuilder.path("/aluno/{id}").buildAndExpand(form.cadastrar(turmaRepository).getAlunoId()).toUri();
+		return ResponseEntity.created(uri).body(new AlunoDto(form.cadastrar(turmaRepository)));
 	}
 
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<AlunoDto> atualizarAluno(@PathVariable Long id,
-			@RequestBody @Valid AlunoFormAtualizar form) {
+	public ResponseEntity<AlunoDto> atualizarAluno(@PathVariable Long id, @RequestBody @Valid AlunoFormAtualizar form) {
 		Optional<Aluno> optional = alunoRepository.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
@@ -90,9 +84,10 @@ public class AlunoController {
 	@Transactional
 	public ResponseEntity<?> deletarAluno(@PathVariable Long id) {
 		Optional<Aluno> optional = alunoRepository.findById(id);
-		
+
 		if (optional.isPresent() && optional.get().isStatus()) {
 			optional.get().setStatus(false);
+
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

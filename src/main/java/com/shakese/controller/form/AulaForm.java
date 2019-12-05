@@ -22,35 +22,34 @@ public class AulaForm {
 
 	@NotNull
 	private String nome;
-
 	@NotNull
 	private List<Long> idNivel;
 
-	public Aula converter(AulaRepository aulaRepository, NivelRepository nivelRepository) {
+	public Aula cadastrar(AulaRepository aulaRepository,
+			NivelRepository nivelRepository) {
 		List<Aula> aulas = aulaRepository.findAll();
+
 		for (Aula nomeAula : aulas) {
-			if(nome.equals(nomeAula.getNome())) {
-				if(nomeAula.isStatus())
+			if (nome.equals(nomeAula.getNome())) {
+				if (nomeAula.isStatus())
 					return null;
 				else {
 					nomeAula.setStatus(true);
-					
+
 					for (Long id : idNivel) {
 						Optional<Nivel> nivel = nivelRepository.findById(id);
 						nomeAula.getNiveis().add(nivel.get());
 					}
-					
 					return nomeAula;
 				}
-			}	
+			}
 		}
-		
+
 		List<Nivel> niveis = new ArrayList<>();
 		for (Long id : idNivel) {
 			Optional<Nivel> nivel = nivelRepository.findById(id);
 			niveis.add(nivel.get());
 		}
-		
 		return new Aula(nome, niveis);
 	}
 }

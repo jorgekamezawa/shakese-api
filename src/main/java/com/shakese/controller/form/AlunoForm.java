@@ -19,25 +19,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlunoForm {
-	
+
 	@NotNull
 	private Pessoa pessoa;
 	@NotNull
 	private double desconto;
 	@NotNull
 	private List<Long> idTurmas;
-	
-	public Aluno converter(TurmaRepository turmaRepository) {
+
+	public Aluno cadastrar(TurmaRepository turmaRepository) {
 		List<Turma> turmasAluno = new ArrayList<Turma>();
-		
+
 		for (Long id : idTurmas) {
-			Optional<Turma> turma =turmaRepository.findById(id);
+			Optional<Turma> turma = turmaRepository.findById(id);
 			turmasAluno.add(turma.get());
 		}
-
-		
 		return new Aluno(pessoa, desconto, turmasAluno);
 	}
-	
-
 }

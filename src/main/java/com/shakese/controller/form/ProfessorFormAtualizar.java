@@ -32,18 +32,34 @@ public class ProfessorFormAtualizar {
 	
 	public Professor atualizar(Long id, ProfessorRepository professorRepository,
 			TurmaRepository turmaRepository) {
+		List<Turma> turmas = turmaRepository.findAll();
+		
 		List<Turma> turmasProfessor = new ArrayList<Turma>();
 		
 		for (Long idTurma : idTurmas) {
-			Optional<Turma> turma =turmaRepository.findById(idTurma);
+			Optional<Turma> turma = turmaRepository.findById(idTurma);
 			turmasProfessor.add(turma.get());
 		}
 		
-		Optional<Professor> professor = professorRepository.findById(id);
-		professor.get().setPessoa(pessoa);
-		professor.get().setSalario(salario);
-		professor.get().setTurmas(turmasProfessor);
+		int validar = 0;
 		
-		return professor.get();
+		for (Turma turma : turmasProfessor) {
+			for (Turma turma2 : turmas) {
+				if(turma.isStatus() && turma.getTurmaId() == turma2.getTurmaId()) {
+					validar++;
+				}
+			}
+		}
+		
+		if(validar >= turmasProfessor.size()) {
+			Optional<Professor> professor = professorRepository.findById(id);
+			professor.get().setPessoa(pessoa);
+			professor.get().setSalario(salario);
+			professor.get().setTurmas(turmasProfessor);
+			
+			return professor.get();
+		}
+		
+		return null;
 	}
 }

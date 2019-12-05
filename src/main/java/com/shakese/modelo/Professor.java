@@ -10,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -41,13 +43,22 @@ public class Professor implements Serializable {
 	@Column(name = "status")
 	private boolean status = true;
 	
-	@OneToMany(cascade = CascadeType.MERGE)
+	@ManyToMany(cascade = CascadeType.MERGE)
+	@JoinTable(name = "tbl_professor_turma", joinColumns = {
+	@JoinColumn(name = "professor_id", referencedColumnName = "professorId")},
+	inverseJoinColumns = {@JoinColumn(name = "turma_id", referencedColumnName = "turmaId")})
 	private List<Turma> turmas;
 	
 	public Professor (Pessoa pessoa, double salario, List<Turma> turmas) {
 		this.pessoa = pessoa;
 		this.salario = salario;
 		this.turmas = turmas;
+	}
+	
+	public Professor (Long id, Pessoa pessoa, double salario) {
+		this.professorId = id;
+		this.pessoa = pessoa;
+		this.salario = salario;
 	}
 
 }

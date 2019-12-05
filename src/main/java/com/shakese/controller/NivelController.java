@@ -28,55 +28,58 @@ import com.shakese.repository.NivelRepository;
 @RestController
 @RequestMapping("/nivel")
 public class NivelController {
-	
+
 	@Autowired
 	private NivelRepository nivelRepository;
-	
+
 	@GetMapping
-	public List<NivelDto> listarNiveis(){
+	public List<NivelDto> listarNiveis() {
 		List<Nivel> niveis = nivelRepository.findAll();
+
 		return NivelDto.converter(niveis);
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<NivelDto> listarDetalheNiveis(@PathVariable Long id){
+	public ResponseEntity<NivelDto> listarDetalheNiveis(@PathVariable Long id) {
 		Optional<Nivel> optional = nivelRepository.findById(id);
-		if(optional.isPresent()) {
+
+		if (optional.isPresent()) {
 			return ResponseEntity.ok(new NivelDto(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<NivelDto> cadastrarNivel(@RequestBody @Valid NivelForm nivelForm, UriComponentsBuilder uriBuilder){
+	public ResponseEntity<NivelDto> cadastrarNivel(@RequestBody @Valid NivelForm nivelForm,
+			UriComponentsBuilder uriBuilder) {
 		Nivel nivel = nivelRepository.save(nivelForm.converter());
-		
+
 		URI uri = uriBuilder.path("/nivel/{id}").buildAndExpand(nivel.getNivelId()).toUri();
 		return ResponseEntity.created(uri).body(new NivelDto(nivel));
 	}
-	
+
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<NivelDto> atualizarNivel(@PathVariable Long id, 
-			@RequestBody @Valid NivelFormAtualizar form){
+	public ResponseEntity<NivelDto> atualizarNivel(@PathVariable Long id, @RequestBody @Valid NivelFormAtualizar form) {
 		Optional<Nivel> optional = nivelRepository.findById(id);
-		if(optional.isPresent()) {
+		
+		if (optional.isPresent()) {
 			Nivel nivel = form.atualizar(id, nivelRepository);
 			return ResponseEntity.ok(new NivelDto(nivel));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<?> deletarNivel(@PathVariable Long id){
+	public ResponseEntity<?> deletarNivel(@PathVariable Long id) {
 		Optional<Nivel> optional = nivelRepository.findById(id);
-		if(optional.isPresent()) {
+		
+		if (optional.isPresent()) {
 			nivelRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
 }

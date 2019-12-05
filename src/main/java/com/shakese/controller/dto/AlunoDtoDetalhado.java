@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlunoDtoDetalhado {
-	
+
 	private Long id;
 	private String nome;
 	private String cpf;
@@ -29,9 +29,9 @@ public class AlunoDtoDetalhado {
 	private Endereco endereco;
 	private double desconto;
 	private List<TurmaDto> turmas;
-	
+
 	public AlunoDtoDetalhado(Aluno aluno) {
-		if(aluno.isStatus()) {
+		if (aluno.isStatus()) {
 			this.id = aluno.getAlunoId();
 			this.nome = aluno.getPessoa().getNome();
 			this.cpf = aluno.getPessoa().getCpf();

@@ -31,64 +31,65 @@ import com.shakese.repository.FuncionarioRepository;
 @RestController
 @RequestMapping("/funcionario")
 public class FuncionarioController {
-	
+
 	@Autowired
 	private FuncionarioRepository funcionarioRepository;
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 
 	@GetMapping
-	public List<FuncionarioDto> listarFuncionarios(){
+	public List<FuncionarioDto> listarFuncionarios() {
 		List<Funcionario> funcionarios = funcionarioRepository.findAll();
-		return FuncionarioDto.converter(
-				funcionarios.stream()
-				.filter(Funcionario::isStatus)
-				.collect(Collectors.toList()));
+
+		return FuncionarioDto
+				.converter(funcionarios.stream().filter(Funcionario::isStatus).collect(Collectors.toList()));
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<FuncionarioDtoDetalhado> listarFuncionario(@PathVariable Long id){
+	public ResponseEntity<FuncionarioDtoDetalhado> listarFuncionario(@PathVariable Long id) {
 		Optional<Funcionario> optional = funcionarioRepository.findById(id);
-		if(optional.isPresent() && optional.get().isStatus()) {
+
+		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new FuncionarioDtoDetalhado(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<FuncionarioDto> cadastrarFuncionario(@RequestBody @Valid 
-			FuncionarioForm form, UriComponentsBuilder uriBuilder){
+	public ResponseEntity<FuncionarioDto> cadastrarFuncionario(@RequestBody @Valid FuncionarioForm form,
+			UriComponentsBuilder uriBuilder) {
 		funcionarioRepository.save(form.cadastrar());
 		enderecoRepository.save(form.getPessoa().getEndereco());
-		
-		URI uri = uriBuilder.path("/funcionario/{id}")
-				.buildAndExpand(form.cadastrar().getFuncionarioId()).toUri();
+
+		URI uri = uriBuilder.path("/funcionario/{id}").buildAndExpand(form.cadastrar().getFuncionarioId()).toUri();
 		return ResponseEntity.created(uri).body(new FuncionarioDto(form.cadastrar()));
 
 	}
-	
+
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<FuncionarioDto> atualizarFuncionario(@PathVariable Long id,
-			@RequestBody @Valid FuncionarioFormAtualizar form){
+			@RequestBody @Valid FuncionarioFormAtualizar form) {
 		Optional<Funcionario> optional = funcionarioRepository.findById(id);
-		if(optional.isPresent() && optional.get().isStatus()) {
+
+		if (optional.isPresent() && optional.get().isStatus()) {
 			Funcionario funcionario = form.atualizar(id, funcionarioRepository);
 			return ResponseEntity.ok(new FuncionarioDto(funcionario));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<?> deletarFuncionario(@PathVariable Long id){
+	public ResponseEntity<?> deletarFuncionario(@PathVariable Long id) {
 		Optional<Funcionario> optional = funcionarioRepository.findById(id);
-		if(optional.isPresent() && optional.get().isStatus()) {
+
+		if (optional.isPresent() && optional.get().isStatus()) {
 			optional.get().setStatus(false);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 }

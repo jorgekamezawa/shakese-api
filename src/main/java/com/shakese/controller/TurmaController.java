@@ -1,7 +1,6 @@
 package com.shakese.controller;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +24,11 @@ import com.shakese.controller.dto.TurmaDto;
 import com.shakese.controller.dto.TurmaDtoDetalhada;
 import com.shakese.controller.form.TurmaForm;
 import com.shakese.controller.form.TurmaFormAtualizar;
-import com.shakese.modelo.Aluno;
 import com.shakese.modelo.Turma;
 import com.shakese.repository.AlunoRepository;
 import com.shakese.repository.AulaRepository;
 import com.shakese.repository.NivelRepository;
+import com.shakese.repository.ProfessorRepository;
 import com.shakese.repository.TurmaRepository;
 
 @RestController
@@ -44,21 +43,21 @@ public class TurmaController {
 	private NivelRepository nivelRepository;
 	@Autowired
 	private AlunoRepository alunoRepository;
+	@Autowired
+	private ProfessorRepository professorRepository;
 
 	@GetMapping
 	public List<TurmaDto> listarTurmas() {
 		List<Turma> turmas = turmaRepository.findAll();
-		return TurmaDto.converter(
-				turmas.stream()
-				.filter(Turma::isStatus)
-				.collect(Collectors.toList()));
+		return TurmaDto.converter(turmas.stream().filter(Turma::isStatus).collect(Collectors.toList()));
 	}
-	
+
 	@GetMapping("/{id}")
 	@Transactional
-	public ResponseEntity<TurmaDtoDetalhada> listarTurma(@PathVariable Long id){
+	public ResponseEntity<TurmaDtoDetalhada> listarTurma(@PathVariable Long id) {
 		Optional<Turma> optional = turmaRepository.findById(id);
-		if(optional.isPresent() && optional.get().isStatus()) {
+
+		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new TurmaDtoDetalhada(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
@@ -67,65 +66,62 @@ public class TurmaController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<TurmaDto> cadastrarAulas(@RequestBody @Valid TurmaForm form,
-		UriComponentsBuilder uriBuilder) {
+			UriComponentsBuilder uriBuilder) {
 		Turma turma = form.converter(aulaRepository, nivelRepository);
-		if(turma.getAula() != null) {
+
+		if (turma.getAula() != null) {
 			List<TurmaDto> turmas = listarTurmas();
+
 			boolean disponibilidade = true;
 			for (TurmaDto turmaDto : turmas) {
-				if(turma.getNivel().getNome() == turmaDto.getNivelNome() &&
-						turma.getAula().getNome() == turmaDto.getAulaNome()){
-							disponibilidade = false;
-							break;
-						}
+				if (turma.getNivel().getNome() == turmaDto.getNivelNome()
+						&& turma.getAula().getNome() == turmaDto.getAulaNome()) {
+					disponibilidade = false;
+
+					break;
+				}
 			}
-			if(disponibilidade) {
+
+			if (disponibilidade) {
 				turmaRepository.save(turma);
+
 				URI uri = uriBuilder.path("/aulas/{id}").buildAndExpand(turma.getTurmaId()).toUri();
 				return ResponseEntity.created(uri).body(new TurmaDto(turma));
 			}
-			return ResponseEntity.notFound().build();
+			return null;
 		}
-			return ResponseEntity.notFound().build();
+		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<TurmaDto> atualizarAula(@PathVariable Long id,
-			@RequestBody @Valid TurmaFormAtualizar form){
+	public ResponseEntity<TurmaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid TurmaFormAtualizar form) {
 		Optional<Turma> optional = turmaRepository.findById(id);
+
 		if (optional.isPresent() && optional.get().isStatus()) {
 			Turma turma = form.atualizar(id, turmaRepository, aulaRepository, nivelRepository);
 			return ResponseEntity.ok(new TurmaDto(turma));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<?> deletarAula(@PathVariable Long id){
+	public ResponseEntity<?> deletarAula(@PathVariable Long id) {
 		Optional<Turma> optional = turmaRepository.findById(id);
-		List<Aluno> alunos = alunoRepository.findAll();
 
-		if(optional.isPresent() && optional.get().isStatus()) {
-			for (Aluno aluno : alunos) {
-				Aluno a = new Aluno(aluno.getAlunoId(), aluno.getPessoa(), aluno.getDesconto());
-				List<Turma> novasTurmas = new ArrayList<>();
-				for (Turma turma : aluno.getTurmas()) {
-					if(turma.getTurmaId() != id) {
-						novasTurmas.add(turma);
-					}
-				}
-				a.setTurmas(novasTurmas);
-				alunoRepository.save(a);
-			}
-			
+		if (optional.isPresent() && optional.get().isStatus()) {
+			Turma turma = new Turma();
+
+			turma.deletarTurmaAluno(alunoRepository, optional, id);
+			turma.deletarTurmaProfessor(professorRepository, optional, id);
+
 			optional.get().setStatus(false);
 			optional.get().setNivel(null);
+
 			return ResponseEntity.ok().build();
 		}
 
-		
 		return ResponseEntity.notFound().build();
 	}
 }

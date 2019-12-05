@@ -33,66 +33,65 @@ import com.shakese.repository.TurmaRepository;
 @RestController
 @RequestMapping("/aula")
 public class AulaController {
-	
+
 	@Autowired
 	private AulaRepository aulaRepository;
-	
 	@Autowired
 	private NivelRepository nivelRepository;
-	
 	@Autowired
 	private TurmaRepository turmaRepository;
-	
+
 	@GetMapping
-	public List<AulaDto> listarAulas(){
+	public List<AulaDto> listarAulas() {
 		List<Aula> aulas = aulaRepository.findAll();
-		return AulaDto.converter(
-				aulas.stream()
-				.filter(Aula::isStatus)
+
+		return AulaDto.converter(aulas.stream().filter(Aula::isStatus)
 				.collect(Collectors.toList()));
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<AulaDtoDetalhada> listarAulaDetalhada(@PathVariable Long id){
+	public ResponseEntity<AulaDtoDetalhada> listarAulaDetalhada(@PathVariable Long id) {
 		Optional<Aula> optional = aulaRepository.findById(id);
-		
-		if(optional.isPresent() && optional.get().isStatus()) {
+
+		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new AulaDtoDetalhada(optional.get()));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<AulaDto> cadastrarAula(@RequestBody @Valid AulaForm form, UriComponentsBuilder uriBuilder){
-		Aula aula = form.converter(aulaRepository, nivelRepository);
-		if(aula.getNiveis() != null) {
+	public ResponseEntity<AulaDto> cadastrarAula(@RequestBody @Valid AulaForm form, 
+			UriComponentsBuilder uriBuilder) {
+		Aula aula = form.cadastrar(aulaRepository, nivelRepository);
+		
+		if (aula.getNiveis() != null) {
 			aulaRepository.save(aula);
 			URI uri = uriBuilder.path("/aula/{id}").buildAndExpand(aula.getAulaId()).toUri();
 			return ResponseEntity.created(uri).body(new AulaDto(aula));
 		}
 		return ResponseEntity.notFound().build();
-		
+
 	}
-	
+
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, 
-			@RequestBody @Valid AulaFormAtualizar form){
+	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form) {
 		Optional<Aula> optional = aulaRepository.findById(id);
-		if(optional.isPresent() && optional.get().isStatus()) {
+
+		if (optional.isPresent() && optional.get().isStatus()) {
 			Aula aula = form.atualizar(id, aulaRepository, nivelRepository, turmaRepository);
 			return ResponseEntity.ok(new AulaDto(aula));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<?> deletarAula(@PathVariable Long id){
+	public ResponseEntity<?> deletarAula(@PathVariable Long id) {
 		Optional<Aula> optional = aulaRepository.findById(id);
-		Turma turma = turmaRepository.findByAulaNomeAndStatusTrue(optional.get().getNome());
-		if(optional.isPresent() && optional.get().isStatus() && turma == null) {
+		List<Turma> turmas = turmaRepository.findByAulaNomeAndStatusTrue(optional.get().getNome());
+		if (optional.isPresent() && optional.get().isStatus() && turmas.isEmpty()) {
 			optional.get().setStatus(false);
 			optional.get().setNiveis(null);
 			return ResponseEntity.ok().build();

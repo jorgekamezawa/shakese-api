@@ -13,18 +13,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlunoDto {
-	
+
 	private Long id;
 	private String nome;
 	private String celular;
-	
-	public AlunoDto (Aluno aluno) {
+
+	public AlunoDto(Aluno aluno) {
 		this.id = aluno.getAlunoId();
 		this.nome = aluno.getPessoa().getNome();
 		this.celular = aluno.getPessoa().getCelular();
 	}
-	
-	public static List<AlunoDto> converter(List<Aluno> alunos){
+
+	public static List<AlunoDto> converter(List<Aluno> alunos) {
 		return alunos.stream().map(AlunoDto::new).collect(Collectors.toList());
 	}
 
