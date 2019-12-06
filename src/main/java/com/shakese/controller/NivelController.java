@@ -23,25 +23,25 @@ import com.shakese.controller.dto.NivelDto;
 import com.shakese.controller.form.NivelForm;
 import com.shakese.controller.form.NivelFormAtualizar;
 import com.shakese.modelo.Nivel;
-import com.shakese.repository.NivelRepository;
+import com.shakese.service.INivelService;
 
 @RestController
 @RequestMapping("/nivel")
 public class NivelController {
 
 	@Autowired
-	private NivelRepository nivelRepository;
+	private INivelService nivelService;
 
 	@GetMapping
 	public List<NivelDto> listarNiveis() {
-		List<Nivel> niveis = nivelRepository.findAll();
+		List<Nivel> niveis = nivelService.findAll();
 
 		return NivelDto.converter(niveis);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<NivelDto> listarDetalheNiveis(@PathVariable Long id) {
-		Optional<Nivel> optional = nivelRepository.findById(id);
+		Optional<Nivel> optional = nivelService.findById(id);
 
 		if (optional.isPresent()) {
 			return ResponseEntity.ok(new NivelDto(optional.get()));
@@ -53,7 +53,7 @@ public class NivelController {
 	@Transactional
 	public ResponseEntity<NivelDto> cadastrarNivel(@RequestBody @Valid NivelForm nivelForm,
 			UriComponentsBuilder uriBuilder) {
-		Nivel nivel = nivelRepository.save(nivelForm.converter());
+		Nivel nivel = nivelService.save(nivelForm.converter());
 
 		URI uri = uriBuilder.path("/nivel/{id}").buildAndExpand(nivel.getNivelId()).toUri();
 		return ResponseEntity.created(uri).body(new NivelDto(nivel));
@@ -62,10 +62,10 @@ public class NivelController {
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<NivelDto> atualizarNivel(@PathVariable Long id, @RequestBody @Valid NivelFormAtualizar form) {
-		Optional<Nivel> optional = nivelRepository.findById(id);
+		Optional<Nivel> optional = nivelService.findById(id);
 		
 		if (optional.isPresent()) {
-			Nivel nivel = form.atualizar(id, nivelRepository);
+			Nivel nivel = form.atualizar(id, nivelService);
 			return ResponseEntity.ok(new NivelDto(nivel));
 		}
 		return ResponseEntity.notFound().build();
@@ -74,10 +74,10 @@ public class NivelController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarNivel(@PathVariable Long id) {
-		Optional<Nivel> optional = nivelRepository.findById(id);
+		Optional<Nivel> optional = nivelService.findById(id);
 		
 		if (optional.isPresent()) {
-			nivelRepository.deleteById(id);
+			nivelService.deleteById(id);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();

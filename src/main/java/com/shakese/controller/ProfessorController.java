@@ -25,31 +25,31 @@ import com.shakese.controller.dto.ProfessorDtoDetalhado;
 import com.shakese.controller.form.ProfessorForm;
 import com.shakese.controller.form.ProfessorFormAtualizar;
 import com.shakese.modelo.Professor;
-import com.shakese.repository.EnderecoRepository;
-import com.shakese.repository.ProfessorRepository;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.IEnderecoService;
+import com.shakese.service.IProfessorService;
+import com.shakese.service.ITurmaService;
 
 @RestController
 @RequestMapping("/professor")
 public class ProfessorController {
 
 	@Autowired
-	private ProfessorRepository professorRepository;
+	private IProfessorService professorService;
 	@Autowired
-	private TurmaRepository turmaRepository;
+	private ITurmaService turmaService;
 	@Autowired
-	private EnderecoRepository enderecoRepository;
+	private IEnderecoService enderecoService;
 
 	@GetMapping
 	public List<ProfessorDto> listarProfessores() {
-		List<Professor> professores = professorRepository.findAll();
+		List<Professor> professores = professorService.findAll();
 
 		return ProfessorDto.converter(professores.stream().filter(Professor::isStatus).collect(Collectors.toList()));
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ProfessorDtoDetalhado> listarProfessor(@PathVariable Long id) {
-		Optional<Professor> optional = professorRepository.findById(id);
+		Optional<Professor> optional = professorService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new ProfessorDtoDetalhado(optional.get()));
@@ -61,12 +61,12 @@ public class ProfessorController {
 	@Transactional
 	public ResponseEntity<ProfessorDto> cadastrarProfessor(@RequestBody @Valid ProfessorForm form,
 			UriComponentsBuilder uriBuilder) {
-		professorRepository.save(form.cadastrar(turmaRepository));
-		enderecoRepository.save(form.getPessoa().getEndereco());
+		professorService.save(form.cadastrar(turmaService));
+		enderecoService.save(form.getPessoa().getEndereco());
 
-		URI uri = uriBuilder.path("/professor/{id}").buildAndExpand(form.cadastrar(turmaRepository).getProfessorId())
+		URI uri = uriBuilder.path("/professor/{id}").buildAndExpand(form.cadastrar(turmaService).getProfessorId())
 				.toUri();
-		return ResponseEntity.created(uri).body(new ProfessorDto(form.cadastrar(turmaRepository)));
+		return ResponseEntity.created(uri).body(new ProfessorDto(form.cadastrar(turmaService)));
 
 	}
 
@@ -74,10 +74,10 @@ public class ProfessorController {
 	@Transactional
 	public ResponseEntity<ProfessorDto> atualizarProfessor(@PathVariable Long id,
 			@RequestBody @Valid ProfessorFormAtualizar form) {
-		Optional<Professor> optional = professorRepository.findById(id);
+		Optional<Professor> optional = professorService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
-			Professor professor = form.atualizar(id, professorRepository, turmaRepository);
+			Professor professor = form.atualizar(id, professorService, turmaService);
 			
 			return ResponseEntity.ok(new ProfessorDto(professor));
 		}
@@ -87,7 +87,7 @@ public class ProfessorController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarProfessor(@PathVariable Long id) {
-		Optional<Professor> optional = professorRepository.findById(id);
+		Optional<Professor> optional = professorService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			optional.get().setStatus(false);

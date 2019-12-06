@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 import com.shakese.modelo.Aluno;
 import com.shakese.modelo.Pessoa;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.AlunoRepository;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.IAlunoService;
+import com.shakese.service.ITurmaService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,13 +28,13 @@ public class AlunoFormAtualizar {
 	@NotNull
 	private List<Long> idTurmas;
 
-	public Aluno atualizar(Long id, AlunoRepository alunoRepository,
-			TurmaRepository turmaRepository) {
-		List<Turma> turmas = turmaRepository.findAll();
+	public Aluno atualizar(Long id, IAlunoService alunoSevice,
+			ITurmaService turmaService) {
+		List<Turma> turmas = turmaService.findAll();
 
 		List<Turma> turmasAluno = new ArrayList<Turma>();
 		for (Long idTurma : idTurmas) {
-			Optional<Turma> turma = turmaRepository.findById(idTurma);
+			Optional<Turma> turma = turmaService.findById(idTurma);
 			turmasAluno.add(turma.get());
 		}
 
@@ -49,7 +49,7 @@ public class AlunoFormAtualizar {
 		}
 
 		if (validar >= turmasAluno.size()) {
-			Optional<Aluno> aluno = alunoRepository.findById(id);
+			Optional<Aluno> aluno = alunoSevice.findById(id);
 
 			aluno.get().setPessoa(pessoa);
 			aluno.get().setDesconto(desconto);

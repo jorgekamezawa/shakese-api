@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import com.shakese.modelo.Pessoa;
 import com.shakese.modelo.Professor;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.ITurmaService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,11 +29,11 @@ public class ProfessorForm {
 	@NotNull
 	private List<Long> idTurmas;
 	
-	public Professor cadastrar(TurmaRepository turmaRepository) {
+	public Professor cadastrar(ITurmaService turmaService) {
 		List<Turma> turmasProfessor = new ArrayList<Turma>();
 		
 		for (Long id : idTurmas) {
-			Optional<Turma> turma =turmaRepository.findById(id);
+			Optional<Turma> turma =turmaService.findById(id);
 			turmasProfessor.add(turma.get());
 		}
 		

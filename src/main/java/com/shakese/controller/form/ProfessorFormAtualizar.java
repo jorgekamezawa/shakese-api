@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 import com.shakese.modelo.Pessoa;
 import com.shakese.modelo.Professor;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.ProfessorRepository;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.IProfessorService;
+import com.shakese.service.ITurmaService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,14 +30,14 @@ public class ProfessorFormAtualizar {
 	@NotNull
 	private List<Long> idTurmas;
 	
-	public Professor atualizar(Long id, ProfessorRepository professorRepository,
-			TurmaRepository turmaRepository) {
-		List<Turma> turmas = turmaRepository.findAll();
+	public Professor atualizar(Long id, IProfessorService professorService,
+			ITurmaService turmaService) {
+		List<Turma> turmas = turmaService.findAll();
 		
 		List<Turma> turmasProfessor = new ArrayList<Turma>();
 		
 		for (Long idTurma : idTurmas) {
-			Optional<Turma> turma = turmaRepository.findById(idTurma);
+			Optional<Turma> turma = turmaService.findById(idTurma);
 			turmasProfessor.add(turma.get());
 		}
 		
@@ -52,7 +52,7 @@ public class ProfessorFormAtualizar {
 		}
 		
 		if(validar >= turmasProfessor.size()) {
-			Optional<Professor> professor = professorRepository.findById(id);
+			Optional<Professor> professor = professorService.findById(id);
 			professor.get().setPessoa(pessoa);
 			professor.get().setSalario(salario);
 			professor.get().setTurmas(turmasProfessor);

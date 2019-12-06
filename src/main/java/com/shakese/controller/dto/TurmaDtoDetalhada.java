@@ -15,6 +15,7 @@ public class TurmaDtoDetalhada {
 	private String aulaNome;
 	private String nivelNome;
 	private double preco;
+//	private Calendario calendario;
 	//private Professor professor;
 	
 	public TurmaDtoDetalhada(Turma turma) {
@@ -22,6 +23,7 @@ public class TurmaDtoDetalhada {
 		this.aulaNome = turma.getAula().getNome();
 		this.nivelNome = turma.getNivel().getNome();
 		this.preco = turma.getPreco();
+//		this.calendario = turma.getCalendario();
 //		this.professor = turma.getProfessor();
 	}
 	

@@ -25,31 +25,31 @@ import com.shakese.controller.dto.AlunoDtoDetalhado;
 import com.shakese.controller.form.AlunoForm;
 import com.shakese.controller.form.AlunoFormAtualizar;
 import com.shakese.modelo.Aluno;
-import com.shakese.repository.AlunoRepository;
-import com.shakese.repository.EnderecoRepository;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.IAlunoService;
+import com.shakese.service.IEnderecoService;
+import com.shakese.service.ITurmaService;
 
 @RestController
 @RequestMapping("/aluno")
 public class AlunoController {
 
 	@Autowired
-	private AlunoRepository alunoRepository;
+	private IAlunoService alunoService;
 	@Autowired
-	private TurmaRepository turmaRepository;
+	private ITurmaService turmaService;
 	@Autowired
-	private EnderecoRepository enderecoRepository;
+	private IEnderecoService enderecoService;
 
 	@GetMapping
 	public List<AlunoDto> listarAlunos() {
-		List<Aluno> alunos = alunoRepository.findAll();
+		List<Aluno> alunos = alunoService.findAll();
 
 		return AlunoDto.converter(alunos.stream().filter(Aluno::isStatus).collect(Collectors.toList()));
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<AlunoDtoDetalhado> detalharAluno(@PathVariable Long id) {
-		Optional<Aluno> optional = alunoRepository.findById(id);
+		Optional<Aluno> optional = alunoService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new AlunoDtoDetalhado(optional.get()));
@@ -61,20 +61,20 @@ public class AlunoController {
 	@Transactional
 	public ResponseEntity<AlunoDto> cadastrarAluno(@RequestBody @Valid AlunoForm form,
 			UriComponentsBuilder uriBuilder) {
-		alunoRepository.save(form.cadastrar(turmaRepository));
-		enderecoRepository.save(form.getPessoa().getEndereco());
+		alunoService.save(form.cadastrar(turmaService));
+		enderecoService.save(form.getPessoa().getEndereco());
 
-		URI uri = uriBuilder.path("/aluno/{id}").buildAndExpand(form.cadastrar(turmaRepository).getAlunoId()).toUri();
-		return ResponseEntity.created(uri).body(new AlunoDto(form.cadastrar(turmaRepository)));
+		URI uri = uriBuilder.path("/aluno/{id}").buildAndExpand(form.cadastrar(turmaService).getAlunoId()).toUri();
+		return ResponseEntity.created(uri).body(new AlunoDto(form.cadastrar(turmaService)));
 	}
 
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<AlunoDto> atualizarAluno(@PathVariable Long id, @RequestBody @Valid AlunoFormAtualizar form) {
-		Optional<Aluno> optional = alunoRepository.findById(id);
+		Optional<Aluno> optional = alunoService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
-			Aluno aluno = form.atualizar(id, alunoRepository, turmaRepository);
+			Aluno aluno = form.atualizar(id, alunoService, turmaService);
 			return ResponseEntity.ok(new AlunoDto(aluno));
 		}
 		return ResponseEntity.notFound().build();
@@ -83,7 +83,7 @@ public class AlunoController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarAluno(@PathVariable Long id) {
-		Optional<Aluno> optional = alunoRepository.findById(id);
+		Optional<Aluno> optional = alunoService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			optional.get().setStatus(false);

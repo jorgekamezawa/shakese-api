@@ -1,9 +1,5 @@
 package com.shakese.modelo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,9 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.shakese.repository.AlunoRepository;
-import com.shakese.repository.ProfessorRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,8 +37,8 @@ public class Turma {
 	@Column(name = "preco")
 	private double preco;
 	
-	//@OneToOne
-	//private Calendario calendario;
+//	@OneToOne(cascade = CascadeType.ALL)
+//	private Calendario calendario;
 	
 	@Column(name = "status")
 	private boolean status = true;
@@ -54,39 +47,6 @@ public class Turma {
 		this.aula = aula;
 		this.nivel = nivel;
 		this.preco = preco;
-	}
-	
-	public void deletarTurmaAluno(AlunoRepository alunoRepository,
-			Optional<Turma> optional, Long id) {
-		List<Aluno> alunos = alunoRepository.findAll();
-		
-			for (Aluno aluno : alunos) {
-				Aluno a = new Aluno(aluno.getAlunoId(), aluno.getPessoa(), aluno.getDesconto());
-				List<Turma> novasTurmas = new ArrayList<>();
-				for (Turma turma : aluno.getTurmas()) {
-					if(turma.getTurmaId() != id) {
-						novasTurmas.add(turma);
-					}
-				}
-				a.setTurmas(novasTurmas);
-				alunoRepository.save(a);
-			}
-	}
-	
-	public void deletarTurmaProfessor(ProfessorRepository professorRepository,
-			Optional<Turma> optional, Long id) {
-		List<Professor> professores = professorRepository.findAll();
-
-		for (Professor professor : professores) {
-			Professor p = new Professor(professor.getProfessorId(), professor.getPessoa(), professor.getSalario());
-			List<Turma> novasTurmas = new ArrayList<>();
-			for (Turma turma : professor.getTurmas()) {
-				if(turma.getTurmaId() != id) {
-					novasTurmas.add(turma);
-				}
-			}
-				p.setTurmas(novasTurmas);
-				professorRepository.save(p);
-		}
+		//this.calendario = calendario;
 	}
 }

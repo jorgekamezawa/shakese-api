@@ -1,7 +1,9 @@
 package com.shakese.controller.form;
 
+import java.util.Optional;
+
 import com.shakese.modelo.Nivel;
-import com.shakese.repository.NivelRepository;
+import com.shakese.service.INivelService;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -16,10 +18,10 @@ public class NivelFormAtualizar {
 	@NotNull
 	private String nome;
 	
-	public Nivel atualizar(Long id, NivelRepository nivelRepository) {
-		Nivel nivel = nivelRepository.getOne(id);
-		nivel.setNome(nome);
-		return nivel;
+	public Nivel atualizar(Long id, INivelService nivelService) {
+		Optional<Nivel> nivel = nivelService.findById(id);
+		nivel.get().setNome(nome);
+		return nivel.get();
 	}
 	
 }

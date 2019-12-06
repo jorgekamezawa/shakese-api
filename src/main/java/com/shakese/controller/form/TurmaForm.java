@@ -7,8 +7,8 @@ import javax.validation.constraints.NotNull;
 import com.shakese.modelo.Aula;
 import com.shakese.modelo.Nivel;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.AulaRepository;
-import com.shakese.repository.NivelRepository;
+import com.shakese.service.IAulaService;
+import com.shakese.service.INivelService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,10 +28,10 @@ public class TurmaForm {
 	@NotNull
 	private double preco;
 	
-	public Turma converter(AulaRepository aulaRepository, NivelRepository nivelRepository) {
-		Optional<Aula> aula = aulaRepository.findById(aulaId);
+	public Turma converter(IAulaService aulaService, INivelService nivelService) {
+		Optional<Aula> aula = aulaService.findById(aulaId);
 		
-		Optional<Nivel> nivel = nivelRepository.findById(nivelId);
+		Optional<Nivel> nivel = nivelService.findById(nivelId);
 		
 		for (Nivel niveis : aula.get().getNiveis()) {
 			if (nivel.get().getNome() == niveis.getNome()) {

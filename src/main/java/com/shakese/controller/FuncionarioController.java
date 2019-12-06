@@ -25,21 +25,21 @@ import com.shakese.controller.dto.FuncionarioDtoDetalhado;
 import com.shakese.controller.form.FuncionarioForm;
 import com.shakese.controller.form.FuncionarioFormAtualizar;
 import com.shakese.modelo.Funcionario;
-import com.shakese.repository.EnderecoRepository;
-import com.shakese.repository.FuncionarioRepository;
+import com.shakese.service.IEnderecoService;
+import com.shakese.service.IFuncionarioService;
 
 @RestController
 @RequestMapping("/funcionario")
 public class FuncionarioController {
 
 	@Autowired
-	private FuncionarioRepository funcionarioRepository;
+	private IFuncionarioService funcionarioService;
 	@Autowired
-	private EnderecoRepository enderecoRepository;
+	private IEnderecoService enderecoService;
 
 	@GetMapping
 	public List<FuncionarioDto> listarFuncionarios() {
-		List<Funcionario> funcionarios = funcionarioRepository.findAll();
+		List<Funcionario> funcionarios = funcionarioService.findAll();
 
 		return FuncionarioDto
 				.converter(funcionarios.stream().filter(Funcionario::isStatus).collect(Collectors.toList()));
@@ -47,7 +47,7 @@ public class FuncionarioController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<FuncionarioDtoDetalhado> listarFuncionario(@PathVariable Long id) {
-		Optional<Funcionario> optional = funcionarioRepository.findById(id);
+		Optional<Funcionario> optional = funcionarioService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new FuncionarioDtoDetalhado(optional.get()));
@@ -59,8 +59,8 @@ public class FuncionarioController {
 	@Transactional
 	public ResponseEntity<FuncionarioDto> cadastrarFuncionario(@RequestBody @Valid FuncionarioForm form,
 			UriComponentsBuilder uriBuilder) {
-		funcionarioRepository.save(form.cadastrar());
-		enderecoRepository.save(form.getPessoa().getEndereco());
+		funcionarioService.save(form.cadastrar());
+		enderecoService.save(form.getPessoa().getEndereco());
 
 		URI uri = uriBuilder.path("/funcionario/{id}").buildAndExpand(form.cadastrar().getFuncionarioId()).toUri();
 		return ResponseEntity.created(uri).body(new FuncionarioDto(form.cadastrar()));
@@ -71,10 +71,10 @@ public class FuncionarioController {
 	@Transactional
 	public ResponseEntity<FuncionarioDto> atualizarFuncionario(@PathVariable Long id,
 			@RequestBody @Valid FuncionarioFormAtualizar form) {
-		Optional<Funcionario> optional = funcionarioRepository.findById(id);
+		Optional<Funcionario> optional = funcionarioService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
-			Funcionario funcionario = form.atualizar(id, funcionarioRepository);
+			Funcionario funcionario = form.atualizar(id, funcionarioService);
 			return ResponseEntity.ok(new FuncionarioDto(funcionario));
 		}
 		return ResponseEntity.notFound().build();
@@ -83,7 +83,7 @@ public class FuncionarioController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarFuncionario(@PathVariable Long id) {
-		Optional<Funcionario> optional = funcionarioRepository.findById(id);
+		Optional<Funcionario> optional = funcionarioService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			optional.get().setStatus(false);

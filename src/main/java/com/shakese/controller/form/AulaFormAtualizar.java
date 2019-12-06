@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 import com.shakese.modelo.Aula;
 import com.shakese.modelo.Nivel;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.AulaRepository;
-import com.shakese.repository.NivelRepository;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.IAulaService;
+import com.shakese.service.INivelService;
+import com.shakese.service.ITurmaService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,11 +27,11 @@ public class AulaFormAtualizar {
 	@NotNull
 	private List<Long> idNivel;
 
-	public Aula atualizar(Long id, AulaRepository aulaRepository,
-			NivelRepository nivelRepository,
-			TurmaRepository turmaRepository) {
-		Optional<Aula> aula = aulaRepository.findById(id);
-		List<Turma> turmas = turmaRepository.findAll();
+	public Aula atualizar(Long id, IAulaService aulaService,
+			INivelService nivelService,
+			ITurmaService turmaService) {
+		Optional<Aula> aula = aulaService.findById(id);
+		List<Turma> turmas = turmaService.findAll();
 
 		List<Nivel> nivelTurmas = new ArrayList<>();
 		for (Turma turma : turmas) {
@@ -42,7 +42,7 @@ public class AulaFormAtualizar {
 
 		List<Nivel> niveis = new ArrayList<Nivel>();
 		for (Long nivelId : idNivel) {
-			Optional<Nivel> nivel = nivelRepository.findById(nivelId);
+			Optional<Nivel> nivel = nivelService.findById(nivelId);
 			niveis.add(nivel.get());
 		}
 

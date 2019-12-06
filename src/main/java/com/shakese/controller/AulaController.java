@@ -26,24 +26,24 @@ import com.shakese.controller.form.AulaForm;
 import com.shakese.controller.form.AulaFormAtualizar;
 import com.shakese.modelo.Aula;
 import com.shakese.modelo.Turma;
-import com.shakese.repository.AulaRepository;
-import com.shakese.repository.NivelRepository;
-import com.shakese.repository.TurmaRepository;
+import com.shakese.service.IAulaService;
+import com.shakese.service.INivelService;
+import com.shakese.service.ITurmaService;
 
 @RestController
 @RequestMapping("/aula")
 public class AulaController {
 
 	@Autowired
-	private AulaRepository aulaRepository;
+	private IAulaService aulaService;
 	@Autowired
-	private NivelRepository nivelRepository;
+	private INivelService nivelService;
 	@Autowired
-	private TurmaRepository turmaRepository;
+	private ITurmaService turmaService;
 
 	@GetMapping
 	public List<AulaDto> listarAulas() {
-		List<Aula> aulas = aulaRepository.findAll();
+		List<Aula> aulas = aulaService.findAll();
 
 		return AulaDto.converter(aulas.stream().filter(Aula::isStatus)
 				.collect(Collectors.toList()));
@@ -51,7 +51,7 @@ public class AulaController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<AulaDtoDetalhada> listarAulaDetalhada(@PathVariable Long id) {
-		Optional<Aula> optional = aulaRepository.findById(id);
+		Optional<Aula> optional = aulaService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
 			return ResponseEntity.ok(new AulaDtoDetalhada(optional.get()));
@@ -63,10 +63,10 @@ public class AulaController {
 	@Transactional
 	public ResponseEntity<AulaDto> cadastrarAula(@RequestBody @Valid AulaForm form, 
 			UriComponentsBuilder uriBuilder) {
-		Aula aula = form.cadastrar(aulaRepository, nivelRepository);
+		Aula aula = form.cadastrar(aulaService, nivelService);
 		
 		if (aula.getNiveis() != null) {
-			aulaRepository.save(aula);
+			aulaService.save(aula);
 			URI uri = uriBuilder.path("/aula/{id}").buildAndExpand(aula.getAulaId()).toUri();
 			return ResponseEntity.created(uri).body(new AulaDto(aula));
 		}
@@ -77,10 +77,10 @@ public class AulaController {
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<AulaDto> atualizarAula(@PathVariable Long id, @RequestBody @Valid AulaFormAtualizar form) {
-		Optional<Aula> optional = aulaRepository.findById(id);
+		Optional<Aula> optional = aulaService.findById(id);
 
 		if (optional.isPresent() && optional.get().isStatus()) {
-			Aula aula = form.atualizar(id, aulaRepository, nivelRepository, turmaRepository);
+			Aula aula = form.atualizar(id, aulaService, nivelService, turmaService);
 			return ResponseEntity.ok(new AulaDto(aula));
 		}
 		return ResponseEntity.notFound().build();
@@ -89,13 +89,19 @@ public class AulaController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarAula(@PathVariable Long id) {
-		Optional<Aula> optional = aulaRepository.findById(id);
-		List<Turma> turmas = turmaRepository.findByAulaNomeAndStatusTrue(optional.get().getNome());
-		if (optional.isPresent() && optional.get().isStatus() && turmas.isEmpty()) {
-			optional.get().setStatus(false);
-			optional.get().setNiveis(null);
-			return ResponseEntity.ok().build();
-		}
-		return ResponseEntity.notFound().build();
+		Optional<Aula> optional = aulaService.findById(id);
+		
+		
+		if(optional.isPresent()) {
+			List<Turma> turmas = turmaService.findByAulaNomeAndStatusTrue(optional.get().getNome());
+			
+			if (optional.get().isStatus() && turmas.isEmpty()) {
+				optional.get().setStatus(false);
+				optional.get().setNiveis(null);
+				return ResponseEntity.ok().build();
+			}else
+				return ResponseEntity.badRequest().build();
+		}else
+			return ResponseEntity.notFound().build();
 	}
 }

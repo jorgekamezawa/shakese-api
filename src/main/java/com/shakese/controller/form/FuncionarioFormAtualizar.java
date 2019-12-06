@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import com.shakese.modelo.Funcionario;
 import com.shakese.modelo.Pessoa;
-import com.shakese.repository.FuncionarioRepository;
+import com.shakese.service.IFuncionarioService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +26,8 @@ public class FuncionarioFormAtualizar {
 	@NotNull
 	private double salario;
 	
-	public Funcionario atualizar(Long id, FuncionarioRepository funcionarioRepository) {
-		Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
+	public Funcionario atualizar(Long id, IFuncionarioService funcionarioService) {
+		Optional<Funcionario> funcionario = funcionarioService.findById(id);
 		funcionario.get().setPessoa(pessoa);
 		funcionario.get().setCargo(cargo);
 		funcionario.get().setSalario(salario);
